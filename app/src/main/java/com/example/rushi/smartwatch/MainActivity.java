@@ -64,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
                 onConnectButtonClick();
             }
         });
+
+        FMWButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent nextActivity = new Intent(MainActivity.this, FMWActivity.class);
+
+                startActivity(nextActivity);
+            }
+        });
     }
 
     private void onConnectButtonClick()
@@ -149,4 +158,5 @@ public class MainActivity extends AppCompatActivity {
     {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
+
 }
