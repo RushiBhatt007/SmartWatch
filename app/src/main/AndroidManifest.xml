@@ -27,6 +27,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
-    </application>
+        <service android:name=".BluetoothCommService"/>
 
+    </application>
 </manifest>
