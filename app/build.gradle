@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+//For firebase
+apply plugin: 'com.google.gms.google-services'
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -25,4 +28,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //For firebase analytics SDK
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
 }

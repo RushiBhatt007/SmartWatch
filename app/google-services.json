@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "558298530753",
+    "firebase_url": "https://smartwatch-50131.firebaseio.com",
+    "project_id": "smartwatch-50131",
+    "storage_bucket": "smartwatch-50131.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:558298530753:android:d260ab1d83e2bf66f52540",
+        "android_client_info": {
+          "package_name": "com.example.rushi.smartwatch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "558298530753-552h3d4uuk58npgmc3dndbcp78rm5pe0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYQ_ympTFVK0fXq63Sfw98dncejoA3UEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "558298530753-552h3d4uuk58npgmc3dndbcp78rm5pe0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
