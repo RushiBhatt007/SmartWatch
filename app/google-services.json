@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "558298530753-ptq9eno4rjcvvvu09r0ogi5s71nsaofb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rushi.smartwatch",
+            "certificate_hash": "5c1af42c711610f208b0e9e191a9ae5121681188"
+          }
+        },
+        {
           "client_id": "558298530753-552h3d4uuk58npgmc3dndbcp78rm5pe0.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectImage = (ImageView) findViewById(R.id.ConnectImage);
 
         ConnectImage.setImageAlpha(32);
-        SVButton.setEnabled(false);
+        //SVButton.setEnabled(false);
         AlarmButton.setEnabled(false);
         SOSButton.setEnabled(false);
         FMWButton.setEnabled(false);
