@@ -48,7 +48,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent nextActivity = new Intent(MainActivity.this, FMWActivity.class);
+                startActivity(nextActivity);
+            }
+        });
 
+        SVButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent nextActivity = new Intent(MainActivity.this, SVActivity.class);
+                startActivity(nextActivity);
+            }
+        });
+
+        AlarmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent nextActivity = new Intent(MainActivity.this, AlarmActivity.class);
+                startActivity(nextActivity);
+            }
+        });
+
+        SOSButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent nextActivity = new Intent(MainActivity.this, SOSActivity.class);
                 startActivity(nextActivity);
             }
         });

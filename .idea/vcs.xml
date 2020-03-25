@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/AndroidProject" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Apurva-Face-Recognition-Module" vcs="Git" />
@@ -13,7 +14,6 @@
     <mapping directory="$PROJECT_DIR$/Random" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Scilab-Project" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/SignInApp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/SmartWatch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/TexasIICDCAndroid" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Tic_Tac_Toe" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/android-ndk" vcs="Git" />

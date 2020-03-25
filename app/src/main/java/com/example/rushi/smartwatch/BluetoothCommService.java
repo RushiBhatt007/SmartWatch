@@ -28,8 +28,8 @@ public class BluetoothCommService extends Service {
     BluetoothSocket bluetoothSocket;
     BluetoothDevice bluetoothDevice;
 
-    OutputStream outputStream;
-    InputStream inputStream;
+    public static OutputStream outputStream;
+    public static InputStream inputStream;
 
     Thread workerThread;
     Boolean stopWorker;
@@ -160,9 +160,10 @@ public class BluetoothCommService extends Service {
 
     }
 
-    void sendData() throws IOException
+    public static void sendData() throws IOException
     {
-
+        String message = "OK\n";
+        outputStream.write(message.getBytes());
     }
 
     void closeBT()
