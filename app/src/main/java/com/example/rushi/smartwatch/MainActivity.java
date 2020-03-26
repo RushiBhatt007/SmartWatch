@@ -79,18 +79,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void onConnectButtonClick()
     {
-        Intent foreground = new Intent(MainActivity.this, BluetoothCommService.class);
+        Intent BTForeground = new Intent(MainActivity.this, BluetoothCommService.class);
         if(deviceName == null)
         {
-            foreground.setAction("connect");
+            BTForeground.setAction("connect");
         }
         else
         {
-            foreground.setAction("disconnect");
+            BTForeground.setAction("disconnect");
         }
-        startService(foreground);
+        startService(BTForeground);
 
-        final Thread thread = new Thread(new Runnable()
+        final Thread BTThread = new Thread(new Runnable()
         {
             @Override
             public void run()
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     while (BluetoothCommService.getSTATUS() == 0)
                     {
-                        this.wait(1000);
+                        this.wait(100);
                         Log.e("MainActivity", "Refreshing");
                     }
                 } catch (InterruptedException e)
@@ -116,7 +116,31 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-        thread.start();
+        BTThread.start();
+
+        Intent FBForeground = new Intent(MainActivity.this, FirebaseFetchService.class);
+        FBForeground.setAction("fetch");
+        startService(FBForeground);
+
+        final Thread FBThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try
+                {
+                    while(FirebaseFetchService.getSTATUS() == 0)
+                    {
+                        this.wait(10);
+                        Log.e("MainActivity", "Fetching");
+                    }
+                }
+                catch (InterruptedException e)
+                {
+                    msg("Couldn't fetch");
+                    finish();
+                }
+            }
+        });
+        FBThread.start();
     }
 
     void uiFunction()
@@ -131,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(deviceName == null)
         {
-            msg("Trying to Connect....");
+            msg("Failed to Connect");
         }
         else
         {

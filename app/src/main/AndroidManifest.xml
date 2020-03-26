@@ -53,6 +53,7 @@
         </activity>
 
         <service android:name=".BluetoothCommService"/>
+        <service android:name=".FirebaseFetchService"/>
 
     </application>
 </manifest>
