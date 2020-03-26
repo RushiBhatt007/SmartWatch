@@ -52,6 +52,14 @@
                 android:value=".MainActivity"/>
         </activity>
 
+        <activity android:name=".AlarmInfoActivity"
+            android:label="Alarm"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AlarmActivity"/>
+        </activity>
+
         <service android:name=".BluetoothCommService"/>
         <service android:name=".FirebaseFetchService"/>
 

@@ -2,6 +2,7 @@ package com.example.rushi.smartwatch;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private Button ConnectButton, SVButton, AlarmButton, SOSButton, FMWButton;
     private ImageView ConnectImage;
 
-    private String mydate;
+    private String myDate;
     private String deviceName = null;
 
     @Override
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         ConnectImage = (ImageView) findViewById(R.id.ConnectImage);
 
         ConnectImage.setImageAlpha(32);
-        //SVButton.setEnabled(false);
-        AlarmButton.setEnabled(false);
+        SVButton.setEnabled(false);
+        //AlarmButton.setEnabled(false);
         SOSButton.setEnabled(false);
         FMWButton.setEnabled(false);
 
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (InterruptedException e)
                 {
-                    msg("Couldn't fetch");
+                    msg("Firebase data fetch failed");
                     finish();
                 }
             }
@@ -155,25 +156,32 @@ public class MainActivity extends AppCompatActivity {
 
         if(deviceName == null)
         {
-            msg("Failed to Connect");
+            msg("Couldn't connect to HC-05. Please Try Again");
         }
         else
         {
-            msg("Successfully Connected with "+deviceName);
+            msg("Successfully connected with "+deviceName);
             onConnect();
         }
     }
 
     private void onConnect()
     {
-        ConnectImage.setImageAlpha(255);
-        SVButton.setEnabled(true);
-        AlarmButton.setEnabled(true);
-        SOSButton.setEnabled(true);
-        FMWButton.setEnabled(true);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run()
+            {
+                ConnectImage.setImageAlpha(255);
+                SVButton.setEnabled(true);
+                AlarmButton.setEnabled(true);
+                SOSButton.setEnabled(true);
+                FMWButton.setEnabled(true);
 
-        mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
-        msg(mydate);
+                myDate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+                msg(myDate);
+            }
+        }, 2000);
+
     }
 
     private void msg(String s)
