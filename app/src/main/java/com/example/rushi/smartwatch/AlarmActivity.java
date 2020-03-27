@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,9 +13,10 @@ import java.util.ArrayList;
 
 public class AlarmActivity extends AppCompatActivity {
 
-    ArrayList<Alarm> alarmArrayList = new ArrayList<Alarm>();
-    ArrayAdapter<Alarm> alarmArrayAdapter;
+    public static ArrayList<Alarm> alarmList = new ArrayList<Alarm>();
+    public static AlarmCustomAdapter alarmArrayAdapter;
 
+    private ListView alarmListView;
     private Button alarmAddButton, alarmDeleteButton;
 
     @Override
@@ -23,10 +25,14 @@ public class AlarmActivity extends AppCompatActivity {
         Intent intent = getIntent();
         setContentView(R.layout.activity_alarm);
 
+        alarmListView = (ListView) findViewById(R.id.alarmListView);
         alarmAddButton = (Button) findViewById(R.id.alarmAddButton);
         alarmDeleteButton = (Button) findViewById(R.id.alarmDeleteButton);
 
-        alarmArrayAdapter = new ArrayAdapter<Alarm>(this, android.R.layout.simple_list_item_1, alarmArrayList);
+        alarmList = FirebaseFetchService.getAlarms();
+        alarmArrayAdapter = new AlarmCustomAdapter(this, alarmList);
+
+        alarmListView.setAdapter(alarmArrayAdapter);
 
         alarmAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,5 +41,10 @@ public class AlarmActivity extends AppCompatActivity {
                 startActivity(nextActivity);
             }
         });
+    }
+
+    public static ArrayAdapter<Alarm> getAlarmArrayAdapter()
+    {
+        return alarmArrayAdapter;
     }
 }

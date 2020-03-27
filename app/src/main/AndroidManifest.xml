@@ -54,7 +54,7 @@
 
         <activity android:name=".AlarmInfoActivity"
             android:label="Alarm"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".AlarmActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AlarmActivity"/>
