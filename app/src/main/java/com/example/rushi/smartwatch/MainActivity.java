@@ -32,11 +32,14 @@ public class MainActivity extends AppCompatActivity {
         FMWButton = (Button) findViewById(R.id.FMWButton);
         ConnectImage = (ImageView) findViewById(R.id.ConnectImage);
 
-        ConnectImage.setImageAlpha(32);
-        SVButton.setEnabled(false);
-        //AlarmButton.setEnabled(false);
-        SOSButton.setEnabled(false);
-        FMWButton.setEnabled(false);
+        if(BluetoothCommService.getSTATUS()==1 && FirebaseFetchService.getSTATUS()==1)
+        {
+            ConnectImage.setImageAlpha(32);
+            SVButton.setEnabled(false);
+            AlarmButton.setEnabled(false);
+            SOSButton.setEnabled(false);
+            FMWButton.setEnabled(false);
+        }
 
         ConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
