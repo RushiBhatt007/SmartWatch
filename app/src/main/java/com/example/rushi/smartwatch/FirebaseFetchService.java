@@ -17,8 +17,12 @@ import java.util.ArrayList;
 public class FirebaseFetchService extends Service {
 
     public static String volume=null, vibration=null;
+
     public static ArrayList<Alarm> alarms;
     public static int numberOfAlarms;
+
+    public static ArrayList<Contact> contacts = new ArrayList<Contact>();
+    public static int numberOfContacts;
 
     public static int STATUS = -1;  //
     public static DatabaseReference database;
@@ -58,6 +62,23 @@ public class FirebaseFetchService extends Service {
                 }
             });
 
+            numberOfContacts = 0;
+            //contacts = new ArrayList<Contact>();
+            database.child("contact").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Contact contact = snapshot.getValue(Contact.class);
+                        contacts.add(contact);
+                        numberOfContacts++;
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
 
             database.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -103,6 +124,29 @@ public class FirebaseFetchService extends Service {
         });
     }
 
+    public static void deleteContact(final String deleteContactName, final String deleteContactPhone, final String deleteContactEmail)
+    {
+        database.child("contact").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    Contact contact = snapshot.getValue(Contact.class);
+                    if(contact.getName().equals(deleteContactName) && contact.getPhone().equals(deleteContactPhone) && contact.getEmail().equals(deleteContactEmail))
+                    {
+                        snapshot.getRef().removeValue();
+                        numberOfContacts--;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public static String getVolume()
     {
         return volume;
@@ -123,6 +167,16 @@ public class FirebaseFetchService extends Service {
         return numberOfAlarms;
     }
 
+    public static ArrayList<Contact> getContacts()
+    {
+        return contacts;
+    }
+
+    public static int getNumberOfContacts()
+    {
+        return numberOfContacts;
+    }
+
     public static void setVolume(String volume1)
     {
         volume = volume1;
@@ -140,6 +194,13 @@ public class FirebaseFetchService extends Service {
         database.child("alarm").child(timestamp).setValue(alarm);
         alarms.add(alarm);
         numberOfAlarms++;
+    }
+
+    public static void addContact(Contact contact, String timestamp)
+    {
+        database.child("contact").child(timestamp).setValue(contact);
+        contacts.add(contact);
+        numberOfContacts++;
     }
 
     public static int getSTATUS()

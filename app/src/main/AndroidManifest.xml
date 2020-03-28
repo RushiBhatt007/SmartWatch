@@ -12,28 +12,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name=".FMWActivity"
-            android:label="Find My Watch"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
-        </activity>
-
-        <activity android:name=".SOSActivity"
-            android:label="SOS Contact Details"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
         </activity>
 
         <activity android:name=".SVActivity"
@@ -53,12 +38,37 @@
         </activity>
 
         <activity android:name=".AlarmInfoActivity"
-            android:label="Alarm"
+            android:label="Set an Alarm"
             android:parentActivityName=".AlarmActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AlarmActivity"/>
         </activity>
+
+        <activity android:name=".FMWActivity"
+            android:label="Find My Watch"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+
+        <activity android:name=".SOSActivity"
+            android:label="SOS Contacts"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+
+        <activity android:name=".SOSInfoActivity"
+            android:label="Add an SOS Contact"
+            android:parentActivityName=".SOSActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SOSActivity"/>
+        </activity>
+
 
         <service android:name=".BluetoothCommService"/>
         <service android:name=".FirebaseFetchService"/>

@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             ConnectImage.setImageAlpha(32);
             SVButton.setEnabled(false);
             //AlarmButton.setEnabled(false);
-            SOSButton.setEnabled(false);
+            //SOSButton.setEnabled(false);
             FMWButton.setEnabled(false);
         }
 

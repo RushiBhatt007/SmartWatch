@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class AlarmActivity extends AppCompatActivity {
 
     public static ArrayList<Alarm> alarmList = new ArrayList<Alarm>();
-    public AlarmCustomAdapter alarmArrayAdapter;
+    public AlarmCustomAdapter alarmCustomAdapter;
     public static int deletedAlarmPosition = -1;
 
     private ListView alarmListView;
@@ -32,9 +32,9 @@ public class AlarmActivity extends AppCompatActivity {
         alarmDeleteButton = (Button) findViewById(R.id.alarmDeleteButton);
 
         alarmList = FirebaseFetchService.getAlarms();
-        alarmArrayAdapter = new AlarmCustomAdapter(this, alarmList);
+        alarmCustomAdapter = new AlarmCustomAdapter(this, alarmList);
 
-        alarmListView.setAdapter(alarmArrayAdapter);
+        alarmListView.setAdapter(alarmCustomAdapter);
 
         alarmAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,7 +42,7 @@ public class AlarmActivity extends AppCompatActivity {
                 if(FirebaseFetchService.getNumberOfAlarms()<=4)
                 {
                     deletedAlarmPosition = -1;
-                    alarmArrayAdapter.notifyDataSetChanged();
+                    alarmCustomAdapter.notifyDataSetChanged();
                     Intent nextActivity = new Intent(AlarmActivity.this, AlarmInfoActivity.class);
                     startActivity(nextActivity);
                 }
@@ -57,7 +57,7 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
                 deletedAlarmPosition = position;
-                alarmArrayAdapter.notifyDataSetChanged();
+                alarmCustomAdapter.notifyDataSetChanged();
                 return false;
             }
         });
@@ -68,9 +68,9 @@ public class AlarmActivity extends AppCompatActivity {
                 if(deletedAlarmPosition != -1)
                 {
                     FirebaseFetchService.deleteAlarm(alarmList.get(deletedAlarmPosition).getAlarmTime(), alarmList.get(deletedAlarmPosition).getMessage());
-                    alarmArrayAdapter.remove(alarmList.get(deletedAlarmPosition));
+                    alarmCustomAdapter.remove(alarmList.get(deletedAlarmPosition));
                     deletedAlarmPosition = -1;
-                    alarmArrayAdapter.notifyDataSetChanged();
+                    alarmCustomAdapter.notifyDataSetChanged();
                 }
             }
         });

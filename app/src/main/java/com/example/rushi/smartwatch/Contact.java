@@ -5,16 +5,16 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class Contact {
     public String name;
-    public String phoneNumber;
-    public String emailID;
+    public String phone;
+    public String email;
 
     public Contact(){}
 
-    public Contact(String name, String phoneNumber, String emailID)
+    public Contact(String name, String phone, String email)
     {
         this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.emailID = emailID;
+        this.phone = phone;
+        this.email = email;
     }
 
     public String getName()
@@ -22,13 +22,13 @@ public class Contact {
         return name;
     }
 
-    public String getPhoneNumber()
+    public String getPhone()
     {
-        return phoneNumber;
+        return phone;
     }
 
-    public String getEmailID()
+    public String getEmail()
     {
-        return emailID;
+        return email;
     }
 }

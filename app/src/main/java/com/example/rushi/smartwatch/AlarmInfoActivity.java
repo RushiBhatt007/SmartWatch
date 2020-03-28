@@ -14,7 +14,7 @@ public class AlarmInfoActivity extends AppCompatActivity {
 
     private TimePicker alarmTimePicker;
     private EditText messageEditText;
-    private Button saveButton;
+    private Button alarmSaveButton;
 
     private String remainingTime;
     Alarm newAlarm;
@@ -28,9 +28,9 @@ public class AlarmInfoActivity extends AppCompatActivity {
 
         alarmTimePicker = (TimePicker) findViewById(R.id.alarmTimePicker);
         messageEditText = (EditText) findViewById(R.id.messageEditText);
-        saveButton = (Button) findViewById(R.id.saveButton);
+        alarmSaveButton = (Button) findViewById(R.id.alarmSaveButton);
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        alarmSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int hr = alarmTimePicker.getHour();
