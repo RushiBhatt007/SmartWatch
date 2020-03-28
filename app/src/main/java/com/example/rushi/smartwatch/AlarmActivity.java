@@ -3,7 +3,7 @@ package com.example.rushi.smartwatch;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -14,7 +14,8 @@ import java.util.ArrayList;
 public class AlarmActivity extends AppCompatActivity {
 
     public static ArrayList<Alarm> alarmList = new ArrayList<Alarm>();
-    public static AlarmCustomAdapter alarmArrayAdapter;
+    public AlarmCustomAdapter alarmArrayAdapter;
+    public static int deletedAlarmPosition = -1;
 
     private ListView alarmListView;
     private Button alarmAddButton, alarmDeleteButton;
@@ -41,10 +42,27 @@ public class AlarmActivity extends AppCompatActivity {
                 startActivity(nextActivity);
             }
         });
-    }
 
-    public static ArrayAdapter<Alarm> getAlarmArrayAdapter()
-    {
-        return alarmArrayAdapter;
+        alarmListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                deletedAlarmPosition = position;
+                alarmArrayAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
+
+        alarmDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(deletedAlarmPosition != -1)
+                {
+                    FirebaseFetchService.deleteAlarm(alarmList.get(deletedAlarmPosition).getAlarmTime(), alarmList.get(deletedAlarmPosition).getMessage());
+                    alarmArrayAdapter.remove(alarmList.get(deletedAlarmPosition));
+                    deletedAlarmPosition = -1;
+                    alarmArrayAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 }

@@ -13,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.DecimalFormat;
-
 public class AlarmInfoActivity extends AppCompatActivity {
 
     private TimePicker alarmTimePicker;
@@ -22,7 +20,6 @@ public class AlarmInfoActivity extends AppCompatActivity {
     private Button saveButton;
 
     private String remainingTime;
-    private int alarmIndex;
     Alarm newAlarm;
     public DatabaseReference database;
 
@@ -48,14 +45,13 @@ public class AlarmInfoActivity extends AppCompatActivity {
                 String minute = min>9?min+"":"0"+min;
 
                 String message = messageEditText.getText().toString();
-                alarmIndex = Integer.parseInt(FirebaseFetchService.getAlarmIndex());
 
                 if(!message.equals(""))
                 {
                     newAlarm = new Alarm(hour+":"+minute, message);
-                    database.child("alarm").child(alarmIndex+"").setValue(newAlarm);
-                    database.child("alarmIndex").setValue(alarmIndex+1);
-                    FirebaseFetchService.setAlarmIndex(alarmIndex+1+"");
+                    Long longTime = System.currentTimeMillis()/1000;
+                    String timestamp = longTime.toString();
+                    database.child("alarm").child(timestamp).setValue(newAlarm);
                     FirebaseFetchService.addAlarms(newAlarm);
                     Intent nextActivity = new Intent(AlarmInfoActivity.this, AlarmActivity.class);
                     startActivity(nextActivity);
