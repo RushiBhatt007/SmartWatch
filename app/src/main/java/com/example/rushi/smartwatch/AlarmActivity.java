@@ -38,6 +38,8 @@ public class AlarmActivity extends AppCompatActivity {
         alarmAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deletedAlarmPosition = -1;
+                alarmArrayAdapter.notifyDataSetChanged();
                 Intent nextActivity = new Intent(AlarmActivity.this, AlarmInfoActivity.class);
                 startActivity(nextActivity);
             }

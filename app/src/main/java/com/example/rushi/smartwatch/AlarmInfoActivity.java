@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 public class AlarmInfoActivity extends AppCompatActivity {
 
     private TimePicker alarmTimePicker;
@@ -21,7 +18,6 @@ public class AlarmInfoActivity extends AppCompatActivity {
 
     private String remainingTime;
     Alarm newAlarm;
-    public DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,13 +30,30 @@ public class AlarmInfoActivity extends AppCompatActivity {
         messageEditText = (EditText) findViewById(R.id.messageEditText);
         saveButton = (Button) findViewById(R.id.saveButton);
 
-        database = FirebaseDatabase.getInstance().getReference();
-
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int hr = alarmTimePicker.getHour();
                 int min = alarmTimePicker.getMinute();
+                String ampm;
+                if(hr > 12)
+                {
+                    ampm = " PM";
+                    hr = hr-12;
+                }
+                else if(hr == 0)
+                {
+                    hr = hr+12;
+                    ampm = " AM";
+                }
+                else if(hr == 12)
+                {
+                    ampm = " PM";
+                }
+                else
+                {
+                    ampm = " AM";
+                }
                 String hour = hr+"";
                 String minute = min>9?min+"":"0"+min;
 
@@ -48,14 +61,13 @@ public class AlarmInfoActivity extends AppCompatActivity {
 
                 if(!message.equals(""))
                 {
-                    newAlarm = new Alarm(hour+":"+minute, message);
+                    newAlarm = new Alarm(hour+":"+minute+ampm, message);
                     Long longTime = System.currentTimeMillis()/1000;
                     String timestamp = longTime.toString();
-                    database.child("alarm").child(timestamp).setValue(newAlarm);
-                    FirebaseFetchService.addAlarms(newAlarm);
+                    FirebaseFetchService.addAlarms(newAlarm, timestamp);
                     Intent nextActivity = new Intent(AlarmInfoActivity.this, AlarmActivity.class);
                     startActivity(nextActivity);
-                    remainingTime = hour+":"+minute;
+                    remainingTime = hour+":"+minute+ampm;
                     msg("Alarm set for "+remainingTime+" from now");
                 }
                 else

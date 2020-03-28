@@ -43,8 +43,7 @@ public class FirebaseFetchService extends Service {
             database.child("alarm").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
-                    {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Alarm alarm = snapshot.getValue(Alarm.class);
                         alarms.add(alarm);
                     }
@@ -118,15 +117,18 @@ public class FirebaseFetchService extends Service {
     public static void setVolume(String volume1)
     {
         volume = volume1;
+        database.child("volume").setValue(volume);
     }
 
     public static void setVibration(String vibration1)
     {
         vibration = vibration1;
+        database.child("vibration").setValue(vibration);
     }
 
-    public static void addAlarms(Alarm alarm)
+    public static void addAlarms(Alarm alarm, String timestamp)
     {
+        database.child("alarm").child(timestamp).setValue(alarm);
         alarms.add(alarm);
     }
 

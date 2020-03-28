@@ -7,15 +7,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 public class SVActivity extends AppCompatActivity {
     public SeekBar volumeSeekBar, vibrationSeekBar;
     public TextView volumeTextView, vibrationTextView;
 
     public int volume, vibration;
-    public DatabaseReference database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +26,6 @@ public class SVActivity extends AppCompatActivity {
         volumeSeekBar.setProgress(Integer.parseInt(FirebaseFetchService.getVolume()));
         vibrationSeekBar.setProgress(Integer.parseInt(FirebaseFetchService.getVibration()));
 
-        database = FirebaseDatabase.getInstance().getReference();
-
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -44,7 +38,6 @@ public class SVActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 volume = seekBar.getProgress();
-                database.child("volume").setValue(volume);
                 FirebaseFetchService.setVolume(volume+"");
             }
         });
@@ -61,7 +54,6 @@ public class SVActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 vibration = seekBar.getProgress();
-                database.child("vibration").setValue(vibration);
                 FirebaseFetchService.setVibration(vibration+"");
             }
         });
