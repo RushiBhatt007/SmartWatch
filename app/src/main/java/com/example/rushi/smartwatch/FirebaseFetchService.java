@@ -17,10 +17,10 @@ import java.util.ArrayList;
 public class FirebaseFetchService extends Service {
 
     public static String volume=null, vibration=null;
+    public static ArrayList<Alarm> alarms;
+    public static int numberOfAlarms;
 
-    public static ArrayList<Alarm> alarms = new ArrayList<Alarm>();
-
-    public static int STATUS = 1;
+    public static int STATUS = -1;  //
     public static DatabaseReference database;
 
     @Override
@@ -40,12 +40,15 @@ public class FirebaseFetchService extends Service {
     {
         if ("fetch".equals(intent.getAction()))
         {
+            numberOfAlarms = 0;
+            alarms = new ArrayList<Alarm>();
             database.child("alarm").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Alarm alarm = snapshot.getValue(Alarm.class);
                         alarms.add(alarm);
+                        numberOfAlarms++;
                     }
                 }
 
@@ -89,6 +92,7 @@ public class FirebaseFetchService extends Service {
                     if(alarm.getAlarmTime().equals(deleteAlarmTime) && alarm.getMessage().equals(deleteAlarmMessage))
                     {
                         snapshot.getRef().removeValue();
+                        numberOfAlarms--;
                     }
                 }
             }
@@ -114,6 +118,11 @@ public class FirebaseFetchService extends Service {
         return alarms;
     }
 
+    public static int getNumberOfAlarms()
+    {
+        return numberOfAlarms;
+    }
+
     public static void setVolume(String volume1)
     {
         volume = volume1;
@@ -130,6 +139,7 @@ public class FirebaseFetchService extends Service {
     {
         database.child("alarm").child(timestamp).setValue(alarm);
         alarms.add(alarm);
+        numberOfAlarms++;
     }
 
     public static int getSTATUS()

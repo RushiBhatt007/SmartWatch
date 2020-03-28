@@ -32,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
         FMWButton = (Button) findViewById(R.id.FMWButton);
         ConnectImage = (ImageView) findViewById(R.id.ConnectImage);
 
-        if(BluetoothCommService.getSTATUS()==1 && FirebaseFetchService.getSTATUS()==1)
+        int a = BluetoothCommService.getSTATUS();
+        int b = FirebaseFetchService.getSTATUS();
+        if(a==-1 && b==-1)
         {
             ConnectImage.setImageAlpha(32);
             SVButton.setEnabled(false);

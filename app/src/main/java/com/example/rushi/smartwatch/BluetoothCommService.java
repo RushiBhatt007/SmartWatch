@@ -41,7 +41,7 @@ public class BluetoothCommService extends Service {
     String MACAddress = "00:19:08:35:F6:00";
 
     private static String CONNECTED_DEVICE = null;
-    private static int STATUS = 1;
+    private static int STATUS = -1;
 
     @Override
     public void onCreate()

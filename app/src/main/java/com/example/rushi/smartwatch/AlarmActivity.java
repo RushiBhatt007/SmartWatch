@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,10 +39,17 @@ public class AlarmActivity extends AppCompatActivity {
         alarmAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deletedAlarmPosition = -1;
-                alarmArrayAdapter.notifyDataSetChanged();
-                Intent nextActivity = new Intent(AlarmActivity.this, AlarmInfoActivity.class);
-                startActivity(nextActivity);
+                if(FirebaseFetchService.getNumberOfAlarms()<=4)
+                {
+                    deletedAlarmPosition = -1;
+                    alarmArrayAdapter.notifyDataSetChanged();
+                    Intent nextActivity = new Intent(AlarmActivity.this, AlarmInfoActivity.class);
+                    startActivity(nextActivity);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Can not add more than 5 alarms", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
