@@ -21,7 +21,7 @@ public class FirebaseFetchService extends Service {
     public static ArrayList<Alarm> alarms;
     public static int numberOfAlarms;
 
-    public static ArrayList<Contact> contacts = new ArrayList<Contact>();
+    public static ArrayList<Contact> contacts;
     public static int numberOfContacts;
 
     public static int STATUS = -1;  //
@@ -63,7 +63,7 @@ public class FirebaseFetchService extends Service {
             });
 
             numberOfContacts = 0;
-            //contacts = new ArrayList<Contact>();
+            contacts = new ArrayList<Contact>();
             database.child("contact").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

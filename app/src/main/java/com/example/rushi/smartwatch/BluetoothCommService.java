@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 public class BluetoothCommService extends Service {
 
+    BluetoothManager bluetoothManager;
     BluetoothAdapter bluetoothAdapter;
     BluetoothSocket bluetoothSocket;
     BluetoothDevice bluetoothDevice;
@@ -48,6 +50,7 @@ public class BluetoothCommService extends Service {
     {
         super.onCreate();
         STATUS = 0;
+        bluetoothManager = (BluetoothManager)getSystemService(Context.BLUETOOTH_SERVICE);
         Log.e("BluetoothCommService", "OnCreate");
     }
 
@@ -83,14 +86,20 @@ public class BluetoothCommService extends Service {
             else
                 notificationBuilder = new Notification.Builder(this);
 
-            //Notification notification = notificationBuilder.setContentTitle("Test").setContentText("test text").setContentIntent(pendingIntent).setSmallIcon(R.mipmap.ic_launcher_round).setTicker("Description").setOngoing(true).build();
+            Notification notification = notificationBuilder.setContentTitle("Test").setContentText("test text").setContentIntent(pendingIntent).setSmallIcon(R.mipmap.ic_launcher_round).setTicker("Description").setOngoing(true).build();
 
-            //startForeground(1, notification);
+            startForeground(1, notification);
             try
             {
                 findBT();
-                if (bluetoothSocket == null)
+                if (bluetoothDevice == null)
+                {
+                    msg("No device found");
+                }
+                else if (bluetoothSocket == null && bluetoothAdapter.isEnabled())
+                {
                     openBT();
+                }
             }
             catch (IOException e)
             {
@@ -118,7 +127,7 @@ public class BluetoothCommService extends Service {
 
     void findBT()
     {
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter = bluetoothManager.getAdapter();
         if(bluetoothAdapter == null)
         {
             msg("Bluetooth Device Not Available");
@@ -126,8 +135,9 @@ public class BluetoothCommService extends Service {
         else if( !bluetoothAdapter.isEnabled() )
         {
             msg("Turn on Bluetooth");
-            //Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            //startActivity(turnBTon);
+            Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(turnBTon);
+            return;
         }
 
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
