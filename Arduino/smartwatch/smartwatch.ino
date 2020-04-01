@@ -48,40 +48,107 @@ int speak = 6;  // Button for speak
 int vibr = 7;   // Button for vibrator
 int PWMPin = 9; // Output of PWM
 
-int virtual_high = 5;
-int virtual_low = 4;
-
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
 
 void setup() 
 {
   Serial.begin(9600);
-  pinMode(virtual_high, HIGH);
-  pinMode(virtual_low, LOW);
   pinMode(speak, INPUT);
   pinMode(vibr, INPUT);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x64)
   display.display();
   display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.clearDisplay();
+  
 }
 
 void loop() 
 {
-  /*
+  showAlarmScreen();
   if(Serial.available())
   {
     char s = Serial.read();
-    Serial.println(s);
+    int var = s-'0';
+    if(var>=0 && var<=5)
+    {
+      showSVScreen(var, var);
+      Serial.println(var);
+    }
   }
-  */
-  display.setCursor(0,0);
+}
+
+void showTimeScreen()
+{
+  
+}
+
+void showFMWScreen()
+{
   display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(26,10);
+  display.println("Finding your");
+  display.setCursor(26,18);
+  display.print("watch .....");
+  display.display();
+}
+
+void showAlarmScreen()
+{
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE);
-  display.print('1');
+  display.setCursor(12,4);
+  display.println("12:45 AM");
+  display.setTextSize(1);
+  display.setCursor(10,22);
+  display.println("Take acidity pills");
+  display.display();
 }
+
+void showAlarmListScreen()
+{
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println("Alarm 1 - 12:45 AM");
+  display.println("Alarm 2 - 01:20 PM");
+  display.println("Alarm 3 - 12:45 AM");
+  display.println("Alarm 4 - 01:20 PM");
+  display.display();
+}
+
+void showSVScreen(int volume, int vibration)
+{
+  int i;
+  int x_start=0, y_start=8;
+  int rect_width=20, rect_height=5;
+
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  
+  display.setCursor(0, 0);
+  display.println("Volume");
+  for(i=1;i<=5;i++)
+  {
+    int colorShow = volume>=i?WHITE:BLACK;
+    display.fillRect(x_start, y_start, rect_width, rect_height, colorShow);
+    x_start = x_start + rect_width + 2;
+  }
+
+  x_start = 0;
+  y_start = 24;
+  display.setCursor(0, 16);
+  display.println("Vibration");
+  for(i=1;i<=53
+  ;i++)
+  {
+    int colorShow = volume>=i?WHITE:BLACK;
+    display.fillRect(x_start, y_start, rect_width, rect_height, colorShow);
+    x_start = x_start + rect_width + 2;
+  }
+  display.display();
+}
+
