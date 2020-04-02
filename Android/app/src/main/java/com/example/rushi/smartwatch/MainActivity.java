@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         ConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                emailAndSMSStuff();
                 onConnectButtonClick();
             }
         });
@@ -81,6 +83,37 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(nextActivity);
             }
         });
+    }
+
+    private void emailAndSMSStuff()
+    {
+        final String phNo = "7984355529";
+        final String bodySMS = "Check SMS";
+
+        //SmsManager smsManager = SmsManager.getDefault();
+        //smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
+
+        final String username = "smartblindwatch@gmail.com";
+        final String password = "dummy password";
+        final String sub = "TEST Email";
+        final String to = "rybhatt27@gmail.com";
+        final String body = "Test Email Body";
+
+        final Thread GMailThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    GMailSender sender = new GMailSender(username, password);
+                    sender.sendMail(sub, body, username, to);
+                    Log.e("GMailThread", "Email Sent");
+                } catch (Exception e)
+                {
+                    Log.e("GMailThread", e.getMessage(), e);
+                }
+            }
+        });
+        GMailThread.start();
+
     }
 
     private void onConnectButtonClick()
