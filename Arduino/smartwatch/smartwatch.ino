@@ -48,6 +48,9 @@ int speak = 6;  // Button for speak
 int vibr = 7;   // Button for vibrator
 int PWMPin = 9; // Output of PWM
 
+int screenBrowseButton = 5;
+int readScreenBrowseButton = 0;
+
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
 
@@ -56,30 +59,60 @@ void setup()
   Serial.begin(9600);
   pinMode(speak, INPUT);
   pinMode(vibr, INPUT);
+  pinMode(screenBrowseButton, INPUT);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x64)
   display.display();
   display.clearDisplay();
-  
+  showTimeScreen();
 }
 
 void loop() 
 {
-  showAlarmScreen();
-  if(Serial.available())
+  Serial.println(digitalRead(screenBrowseButton));
+  if(digitalRead(screenBrowseButton) == HIGH)
   {
-    char s = Serial.read();
-    int var = s-'0';
-    if(var>=0 && var<=5)
-    {
-      showSVScreen(var, var);
-      Serial.println(var);
-    }
+    readScreenBrowseButton++;
+    if(readScreenBrowseButton%6 == 0)
+      showTimeScreen();
+    else if(readScreenBrowseButton%6 == 1)
+      showSVScreen(2,2);
+    else if(readScreenBrowseButton%6 == 2)
+      showAlarmListScreen();
+    else if(readScreenBrowseButton%6 == 3)
+      showAlarmScreen();
+    else if(readScreenBrowseButton%6 == 4)
+      showFMWScreen();
+    else if(readScreenBrowseButton%6 == 5)
+      showSOSScreen();
   }
 }
 
 void showTimeScreen()
 {
-  
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println("18:25 PM");
+  display.display();
+}
+
+void showSOSScreen()
+{
+  int i;
+  for(i=5;i>=0;i--)
+  {
+    display.clearDisplay();
+    display.setTextColor(WHITE);
+    display.setTextSize(1);
+    display.setCursor(8,0);
+    display.println("Sending SOS in ...");
+    display.setTextSize(3);
+    display.setCursor(56,12);
+    display.println(i);
+    delay(1000);
+    display.display();
+  }
 }
 
 void showFMWScreen()
@@ -126,6 +159,7 @@ void showSVScreen(int volume, int vibration)
   int x_start=0, y_start=8;
   int rect_width=20, rect_height=5;
 
+  display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
   

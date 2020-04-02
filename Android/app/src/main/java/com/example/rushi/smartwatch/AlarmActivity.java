@@ -39,7 +39,7 @@ public class AlarmActivity extends AppCompatActivity {
         alarmAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(FirebaseFetchService.getNumberOfAlarms()<=4)
+                if(FirebaseFetchService.getNumberOfAlarms()<=3)
                 {
                     deletedAlarmPosition = -1;
                     alarmCustomAdapter.notifyDataSetChanged();
@@ -48,7 +48,7 @@ public class AlarmActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "Can not add more than 5 alarms", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Can not add more than 4 alarms", Toast.LENGTH_SHORT).show();
                 }
             }
         });
