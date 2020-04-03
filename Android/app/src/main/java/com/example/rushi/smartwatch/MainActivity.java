@@ -1,8 +1,14 @@
 package com.example.rushi.smartwatch;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.util.Calendar;
 
@@ -21,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private String myDate;
     private String deviceName = null;
 
+    LocationManager locationManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         SOSButton = (Button) findViewById(R.id.SOSButton);
         FMWButton = (Button) findViewById(R.id.FMWButton);
         ConnectImage = (ImageView) findViewById(R.id.ConnectImage);
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         int a = BluetoothCommService.getSTATUS();
         int b = FirebaseFetchService.getSTATUS();
@@ -85,19 +95,54 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private Location getDeviceLoc()
+    {
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        else
+        {
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location location1 = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location location2 = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            if (location != null)
+            {
+                return location;
+            }
+            else if (location1 != null)
+            {
+                return location1;
+            }
+            else if (location2 != null)
+            {
+                return location2;
+            }
+            else
+            {
+                msg("Unable to trace your location");
+            }
+        }
+        return null;
+    }
+
     private void emailAndSMSStuff()
     {
-        final String phNo = "7984355529";
-        final String bodySMS = "Check SMS";
+        Location location = getDeviceLoc();
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
 
-        //SmsManager smsManager = SmsManager.getDefault();
-        //smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
+        final String phNo = "7984355529";
+        final String bodySMS =  "https://maps.google.com/?q="+latitude+","+longitude;
+
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
 
         final String username = "smartblindwatch@gmail.com";
         final String password = "dummy password";
         final String sub = "TEST Email";
         final String to = "rybhatt27@gmail.com";
-        final String body = "Test Email Body";
+        final String body = "https://maps.google.com/?q="+latitude+","+longitude;
 
         final Thread GMailThread = new Thread(new Runnable() {
             @Override
@@ -113,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         GMailThread.start();
+
 
     }
 
