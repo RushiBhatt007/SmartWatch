@@ -68,7 +68,7 @@ void setup()
 
 void loop() 
 {
-  Serial.println(digitalRead(screenBrowseButton));
+  //Serial.println(digitalRead(screenBrowseButton));
   if(digitalRead(screenBrowseButton) == HIGH)
   {
     readScreenBrowseButton++;

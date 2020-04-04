@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                emailAndSMSStuff();
+                //emailAndSMSStuff();
                 onConnectButtonClick();
             }
         });
@@ -132,17 +132,19 @@ public class MainActivity extends AppCompatActivity {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        final String phNo = "7984355529";
+        final String phNo = "9426659100";
         final String bodySMS =  "https://maps.google.com/?q="+latitude+","+longitude;
 
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
 
-        final String username = "smartblindwatch@gmail.com";
-        final String password = "dummy password";
+        final String username = FirebaseFetchService.getGMailUsername();
+        final String password = FirebaseFetchService.getGMailUsername();
         final String sub = "TEST Email";
         final String to = "rybhatt27@gmail.com";
         final String body = "https://maps.google.com/?q="+latitude+","+longitude;
+
+        msg(username);
 
         final Thread GMailThread = new Thread(new Runnable() {
             @Override

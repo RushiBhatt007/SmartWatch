@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.UUID;
 
@@ -161,12 +163,71 @@ public class BluetoothCommService extends Service {
         bluetoothSocket.connect();
         outputStream = bluetoothSocket.getOutputStream();
         inputStream = bluetoothSocket.getInputStream();
-
-        //beginListenForData();
+        beginListenForData();
     }
 
     void beginListenForData()
     {
+        final Handler handler = new Handler();
+        final byte delimiter = 10;  //ASCII code for newline character
+
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+
+        workerThread = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker)
+                {
+                    try
+                    {
+                        int bytesAvailable = inputStream.available();
+                        if(bytesAvailable > 0)
+                        {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            inputStream.read(packetBytes);
+                            for(int i=0;i<bytesAvailable;i++)
+                            {
+                                byte b = packetBytes[i];
+                                if(b == delimiter)
+                                {
+                                    byte[] encodedBytes = new byte[readBufferPosition];
+                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                    final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
+                                    readBufferPosition = 0;
+                                    handler.post(new Runnable()
+                                    {
+                                        public void run()
+                                        {
+                                            msg("Received data is: "+data);
+                                            try
+                                            {
+                                                sendData();
+                                            }
+                                            catch (IOException e)
+                                            {
+                                                msg("Thrown exception");
+                                            }
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    readBuffer[readBufferPosition++] = b;
+                                }
+                            }
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        stopWorker = true;
+                    }
+                }
+            }
+        });
 
     }
 

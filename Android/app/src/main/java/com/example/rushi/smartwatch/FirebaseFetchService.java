@@ -24,6 +24,8 @@ public class FirebaseFetchService extends Service {
     public static ArrayList<Contact> contacts;
     public static int numberOfContacts;
 
+    public static String GMailUsername, GMailPassword;
+
     public static int STATUS = -1;  //
     public static DatabaseReference database;
 
@@ -83,6 +85,8 @@ public class FirebaseFetchService extends Service {
             database.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GMailUsername = dataSnapshot.child("GMailUsername").getValue().toString();
+                    GMailPassword = dataSnapshot.child("GMailPassword").getValue().toString();
                     volume = dataSnapshot.child("volume").getValue().toString();
                     vibration = dataSnapshot.child("vibration").getValue().toString();
                 }
@@ -175,6 +179,16 @@ public class FirebaseFetchService extends Service {
     public static int getNumberOfContacts()
     {
         return numberOfContacts;
+    }
+
+    public static String getGMailUsername()
+    {
+        return GMailUsername;
+    }
+
+    public static String getGMailPassword()
+    {
+        return GMailPassword;
     }
 
     public static void setVolume(String volume1)
