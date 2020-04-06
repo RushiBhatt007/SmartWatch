@@ -89,8 +89,8 @@ public class BluetoothCommService extends Service {
                 notificationBuilder = new Notification.Builder(this);
 
             Notification notification = notificationBuilder.setContentTitle("Test").setContentText("test text").setContentIntent(pendingIntent).setSmallIcon(R.mipmap.ic_launcher_round).setTicker("Description").setOngoing(true).build();
-
             startForeground(1, notification);
+            beginListenForData();
             try
             {
                 findBT();
@@ -163,7 +163,7 @@ public class BluetoothCommService extends Service {
         bluetoothSocket.connect();
         outputStream = bluetoothSocket.getOutputStream();
         inputStream = bluetoothSocket.getInputStream();
-        beginListenForData();
+        Log.e("Service", "Here at 1");
     }
 
     void beginListenForData()
@@ -189,6 +189,7 @@ public class BluetoothCommService extends Service {
                         {
                             byte[] packetBytes = new byte[bytesAvailable];
                             inputStream.read(packetBytes);
+                            Log.e("Service", "Here at 4");
                             for(int i=0;i<bytesAvailable;i++)
                             {
                                 byte b = packetBytes[i];
@@ -198,6 +199,7 @@ public class BluetoothCommService extends Service {
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                     readBufferPosition = 0;
+                                    Log.e("Service", "Here at 2");
                                     handler.post(new Runnable()
                                     {
                                         public void run()
@@ -233,6 +235,7 @@ public class BluetoothCommService extends Service {
 
     public static void sendData() throws IOException
     {
+        Log.e("Service", "Here at 3");
         String message = "OK\n";
         outputStream.write(message.getBytes());
     }

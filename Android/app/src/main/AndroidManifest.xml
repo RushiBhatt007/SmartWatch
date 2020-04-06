@@ -76,6 +76,12 @@
                 android:value=".SOSActivity"/>
         </activity>
 
+        <receiver android:name=".BluetoothConnectReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED"/>
+            </intent-filter>
+        </receiver>
 
         <service android:name=".BluetoothCommService"/>
         <service android:name=".FirebaseFetchService"/>
