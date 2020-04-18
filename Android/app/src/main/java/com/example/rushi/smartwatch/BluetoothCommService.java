@@ -18,6 +18,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,7 +92,6 @@ public class BluetoothCommService extends Service {
 
             Notification notification = notificationBuilder.setContentTitle("Test").setContentText("test text").setContentIntent(pendingIntent).setSmallIcon(R.mipmap.ic_launcher_round).setTicker("Description").setOngoing(true).build();
             startForeground(1, notification);
-            beginListenForData();
             try
             {
                 findBT();
@@ -164,73 +165,74 @@ public class BluetoothCommService extends Service {
         outputStream = bluetoothSocket.getOutputStream();
         inputStream = bluetoothSocket.getInputStream();
         Log.e("Service", "Here at 1");
+        beginListenForData();
     }
 
-    void beginListenForData()
+    public class ListenThread extends Thread
     {
+        Boolean stopWorker = false;
+        int readBufferPosition = 0;
+        byte[] readBuffer = new byte[1024];
+
+
         final Handler handler = new Handler();
         final byte delimiter = 10;  //ASCII code for newline character
 
-        stopWorker = false;
-        readBufferPosition = 0;
-        readBuffer = new byte[1024];
-
-        workerThread = new Thread(new Runnable()
+        @Override
+        public void run()
         {
-            @Override
-            public void run()
+            while(!Thread.currentThread().isInterrupted() && !stopWorker)
             {
-                while (!Thread.currentThread().isInterrupted() && !stopWorker)
+                try
                 {
-                    try
+                    int bytesAvailable = inputStream.available();
+                    if(bytesAvailable > 0)
                     {
-                        int bytesAvailable = inputStream.available();
-                        if(bytesAvailable > 0)
+                        byte[] packetBytes = new byte[bytesAvailable];
+                        inputStream.read(packetBytes);
+                        Log.e("Service", "Here at 4");
+                        for(int i=0;i<bytesAvailable;i++)
                         {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            inputStream.read(packetBytes);
-                            Log.e("Service", "Here at 4");
-                            for(int i=0;i<bytesAvailable;i++)
+                            byte b = packetBytes[i];
+                            if(b == delimiter)
                             {
-                                byte b = packetBytes[i];
-                                if(b == delimiter)
+                                byte[] encodedBytes = new byte[readBufferPosition];
+                                System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
+                                readBufferPosition = 0;
+                                Log.d("TAG", "run: ");
+                                handler.post(new Runnable()
                                 {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
-                                    readBufferPosition = 0;
-                                    Log.e("Service", "Here at 2");
-                                    handler.post(new Runnable()
+                                    public void run()
                                     {
-                                        public void run()
-                                        {
-                                            msg("Received data is: "+data);
-                                            try
-                                            {
-                                                sendData();
-                                            }
-                                            catch (IOException e)
-                                            {
-                                                msg("Thrown exception");
-                                            }
-                                        }
-                                    });
-                                }
-                                else
-                                {
-                                    readBuffer[readBufferPosition++] = b;
-                                }
+                                        Log.e("Rx S","Received data is: "+data);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                readBuffer[readBufferPosition++] = b;
                             }
                         }
                     }
-                    catch (IOException e)
-                    {
-                        stopWorker = true;
-                    }
+                }
+                catch (IOException e)
+                {
+                    stopWorker = true;
                 }
             }
-        });
+        }
+    }
 
+    public void beginListenForData()
+    {
+        Intent intent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        ListenThread listenThread = new ListenThread();
+        listenThread.start();
     }
 
     public static void sendData() throws IOException
@@ -264,6 +266,16 @@ public class BluetoothCommService extends Service {
     void msg(String s)
     {
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+    }
+
+    public static InputStream getInputStream()
+    {
+        return inputStream;
+    }
+
+    public static OutputStream getOutputStream()
+    {
+        return outputStream;
     }
 
     public static String getConnectedDevice()

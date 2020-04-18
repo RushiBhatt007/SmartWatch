@@ -268,6 +268,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 2000);
 
+        Intent BTReceiver = new Intent(MainActivity.this, BluetoothConnectReceiver.class);
+        BTReceiver.setAction("inputExtra");
+        startService(BTReceiver);
+        Log.e("MainActivity", "BT Rx Service called");
     }
 
     private void msg(String s)
