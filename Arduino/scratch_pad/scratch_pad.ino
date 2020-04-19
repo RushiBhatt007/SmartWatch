@@ -10,6 +10,6 @@ void loop() {
     char c = Serial.read();
     Serial.println(c);
   }
-  delay(2000);
-  Serial.println("aaaaaaaa");
+  //delay(2000);
+  //Serial.println("aaaaaaaa");
 }

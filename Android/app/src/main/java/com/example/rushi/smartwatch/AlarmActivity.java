@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class AlarmActivity extends AppCompatActivity {
@@ -50,6 +51,15 @@ public class AlarmActivity extends AppCompatActivity {
                 {
                     Toast.makeText(getApplicationContext(), "Can not add more than 4 alarms", Toast.LENGTH_SHORT).show();
                 }
+
+                try
+                {
+                    BluetoothCommService.sendData("add alarm"+"\n");
+                }
+                catch (IOException e)
+                {
+
+                }
             }
         });
 
@@ -71,6 +81,15 @@ public class AlarmActivity extends AppCompatActivity {
                     alarmCustomAdapter.remove(alarmList.get(deletedAlarmPosition));
                     deletedAlarmPosition = -1;
                     alarmCustomAdapter.notifyDataSetChanged();
+
+                    try
+                    {
+                        BluetoothCommService.sendData("delete alarm"+"\n");
+                    }
+                    catch (IOException e)
+                    {
+
+                    }
                 }
             }
         });

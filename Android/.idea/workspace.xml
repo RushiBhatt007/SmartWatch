@@ -13,6 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="58ed187f-73a9-48c1-abce-f64194711f73" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../Arduino/scratch_pad/scratch_pad.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino/scratch_pad/scratch_pad.ino" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Arduino/smartwatch/smartwatch.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino/smartwatch/smartwatch.ino" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

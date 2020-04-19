@@ -36,7 +36,7 @@ public class FMWActivity extends AppCompatActivity {
     public void onFWMButtonClick()
     {
         try {
-            BluetoothCommService.sendData();
+            BluetoothCommService.sendData("FWM");
             //Toast.makeText(getApplicationContext(), "SENT", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e)

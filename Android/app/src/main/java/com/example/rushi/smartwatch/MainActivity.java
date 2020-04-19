@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         });
         BTThread.start();
 
+
         Intent FBForeground = new Intent(MainActivity.this, FirebaseFetchService.class);
         FBForeground.setAction("fetch");
         startService(FBForeground);

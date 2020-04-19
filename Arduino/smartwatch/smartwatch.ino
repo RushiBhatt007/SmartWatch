@@ -9,15 +9,17 @@ class alarm
 {
   public:
   int h, m, ampm;
-
+  String msg;
+  
   alarm(){
   }
 
-  alarm(int h1, int m1, int ampm1)
+  alarm(int h1, int m1, int ampm1, String msg1)
   {
     h = h1;
     m = m1;
     ampm = ampm1;
+    msg = msg1;
   }
 
   int getH()
@@ -34,6 +36,11 @@ class alarm
   {
     return ampm;
   }
+
+  String getMsg()
+  {
+    return msg;
+  }
 };
 
 #define OLED_RESET 4
@@ -43,6 +50,8 @@ char* tim;
 int h1, h2, m1, m2, s1, s2, ampm;
 int h, m, s; 
 char* disptime="";
+
+alarm alarmList[4];
 
 int speak = 6;  // Button for speak
 int vibr = 7;   // Button for vibrator
@@ -67,8 +76,37 @@ void setup()
 }
 
 void loop() 
-{
-  //Serial.println(digitalRead(screenBrowseButton));
+{  
+  // Listen to Changes on App
+  if(Serial.available())
+  {
+    char c = Serial.read();
+    if (c == '0')
+    {
+      initializeAllVariables();
+    }
+    else if(c == '1')
+    {
+      addAlarm();
+    }
+    else if(c == '2')
+    {
+      deleteAlarm();
+    }
+    else if(c == '3')
+    {
+      updateVolume();
+    }
+    else if(c == '4')
+    {
+      updateVibration();
+    }
+  }
+
+  // TODO: Trigger SOS Button
+  // TODO: Buzz on Alarm Event
+  
+  // Browse Screen
   if(digitalRead(screenBrowseButton) == HIGH)
   {
     readScreenBrowseButton++;
@@ -85,6 +123,59 @@ void loop()
     else if(readScreenBrowseButton%6 == 5)
       showSOSScreen();
   }
+}
+
+void initializeAllVariables()
+{
+  Serial.print("IV\n");
+  while(true)
+  {
+    char c = Serial.read();
+    if (c == '=')
+    {
+      return;
+    }
+    
+    if(c == '{')
+    {
+      Serial.print("\n");
+      while(true)
+      {
+       char ch = Serial.read();
+       if(ch == '}')
+       {
+          break;
+       }
+
+       // Upper Case || Lower Case || Numbers || space || colon || comma
+       if((ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch>=48 && ch<=57) || ch==32 || ch==58 || ch==44)
+       {
+          Serial.print(ch); 
+       }
+      }
+    }
+    
+  }
+}
+
+void addAlarm()
+{
+  
+}
+
+void deleteAlarm()
+{
+  
+}
+
+void updateVolume()
+{
+  
+}
+
+void updateVibration()
+{
+  
 }
 
 void showTimeScreen()

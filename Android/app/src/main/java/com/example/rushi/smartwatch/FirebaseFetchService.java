@@ -2,6 +2,7 @@ package com.example.rushi.smartwatch;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
@@ -97,6 +98,15 @@ public class FirebaseFetchService extends Service {
                 }
             });
             STATUS=1;
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run()
+                {
+                    BluetoothCommService.initializeVariables();
+                }
+            }, 4000);
+
             return START_STICKY;
         }
         else

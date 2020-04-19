@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
+
 public class SVActivity extends AppCompatActivity {
     public SeekBar volumeSeekBar, vibrationSeekBar;
     public TextView volumeTextView, vibrationTextView;
@@ -39,6 +41,14 @@ public class SVActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 volume = seekBar.getProgress();
                 FirebaseFetchService.setVolume(volume+"");
+                try
+                {
+                    BluetoothCommService.sendData("volume: "+volume+"\n");
+                }
+                catch (IOException e)
+                {
+
+                }
             }
         });
 
@@ -55,6 +65,14 @@ public class SVActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 vibration = seekBar.getProgress();
                 FirebaseFetchService.setVibration(vibration+"");
+                try
+                {
+                    BluetoothCommService.sendData("vibration: "+vibration+"\n");
+                }
+                catch (IOException e)
+                {
+
+                }
             }
         });
     }

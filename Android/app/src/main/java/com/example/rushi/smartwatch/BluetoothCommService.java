@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,6 +47,8 @@ public class BluetoothCommService extends Service {
 
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     String MACAddress = "00:19:08:35:F6:00";
+
+    private static String myTime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());    //A
 
     private static String CONNECTED_DEVICE = null;
     private static int STATUS = -1;
@@ -235,11 +239,55 @@ public class BluetoothCommService extends Service {
         listenThread.start();
     }
 
-    public static void sendData() throws IOException
+    public static void initiateSend(String s) throws IOException
     {
+        String data = s + '\n';
         Log.e("Service", "Here at 3");
-        String message = "OK\n";
-        outputStream.write(message.getBytes());
+        outputStream.write(data.getBytes());
+    }
+
+    public static void sendData(String s) throws IOException
+    {
+        String data = '{' + s + '}' + '\n';
+        Log.e("Service", "Here at 3");
+        outputStream.write(data.getBytes());
+    }
+
+    public static void terminateSend(String s) throws IOException
+    {
+        String data = s + '\n';
+        Log.e("Service", "Here at 3");
+        outputStream.write(data.getBytes());
+    }
+
+    public static void initializeVariables()
+    {
+        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
+        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
+
+        String volume = FirebaseFetchService.getVolume();   //D
+        String vibration = FirebaseFetchService.getVibration(); //E
+
+        try
+        {
+            initiateSend("0");
+            sendData(myTime);
+            sendData(numberOfAlarms+"");
+
+            for(int i=0; i<numberOfAlarms; i++)
+            {
+                sendData(alarms.get(i).getAlarmTime());
+                sendData(alarms.get(i).getMessage());
+            }
+
+            sendData(volume);
+            sendData(vibration);
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
+
+        }
     }
 
     void closeBT()
