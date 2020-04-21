@@ -2,6 +2,7 @@ package com.example.rushi.smartwatch;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -41,6 +42,15 @@ public class SVActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 volume = seekBar.getProgress();
                 FirebaseFetchService.setVolume(volume+"");
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run()
+                    {
+                        BluetoothCommService.updateVolume();
+                    }
+                }, 1000);
+
                 try
                 {
                     BluetoothCommService.sendData("volume: "+volume+"\n");
@@ -65,6 +75,15 @@ public class SVActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 vibration = seekBar.getProgress();
                 FirebaseFetchService.setVibration(vibration+"");
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run()
+                    {
+                        BluetoothCommService.updateVibration();
+                    }
+                }, 1000);
+
                 try
                 {
                     BluetoothCommService.sendData("vibration: "+vibration+"\n");

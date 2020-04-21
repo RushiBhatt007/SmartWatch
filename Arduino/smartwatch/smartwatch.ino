@@ -5,6 +5,42 @@
 #include <TimeLib.h>
 #include <DS1307RTC.h>
 
+class alarme
+{
+  public:
+  String tme, msg;
+  
+  alarme(){
+  }
+
+  alarme(String tme1, String msg1)
+  {
+    tme = tme1;
+    msg = msg1;
+  }
+
+  void setTme(String tme1)
+  {
+    tme = tme1;
+  }
+
+  void setMsg(String msg1)
+  {
+    msg=msg1;
+  }
+  
+  String getTme()
+  {
+    return tme;
+  }
+
+  String getMsg()
+  {
+    return msg;
+  }
+};
+
+
 class alarm
 {
   public:
@@ -51,7 +87,14 @@ int h1, h2, m1, m2, s1, s2, ampm;
 int h, m, s; 
 char* disptime="";
 
-alarm alarmList[4];
+
+// Variables
+alarme alarmeList[4];
+String myTime="";
+int numberOfAlarms=-1;
+String volume="";
+String vibration="";
+
 
 int speak = 6;  // Button for speak
 int vibr = 7;   // Button for vibrator
@@ -73,6 +116,9 @@ void setup()
   display.display();
   display.clearDisplay();
   showTimeScreen();
+
+  for (int i=0; i<4;i++)
+    alarmeList[i] = alarme("Test", "Test");
 }
 
 void loop() 
@@ -81,23 +127,23 @@ void loop()
   if(Serial.available())
   {
     char c = Serial.read();
-    if (c == '0')
+    if (c == '~')
     {
       initializeAllVariables();
     }
-    else if(c == '1')
+    else if(c == '!')
     {
       addAlarm();
     }
-    else if(c == '2')
+    else if(c == '@')
     {
       deleteAlarm();
     }
-    else if(c == '3')
+    else if(c == '#')
     {
       updateVolume();
     }
-    else if(c == '4')
+    else if(c == '$')
     {
       updateVibration();
     }
@@ -127,55 +173,159 @@ void loop()
 
 void initializeAllVariables()
 {
+  String entireMsg = "";
+  int count = 0;
   Serial.print("IV\n");
   while(true)
   {
     char c = Serial.read();
     if (c == '=')
     {
+      // Works Well
+      printRoutine();
       return;
     }
-    
     if(c == '{')
     {
-      Serial.print("\n");
-      while(true)
+      String s = tokenizeWord();
+      if(count == 0)
       {
-       char ch = Serial.read();
-       if(ch == '}')
-       {
-          break;
-       }
-
-       // Upper Case || Lower Case || Numbers || space || colon || comma
-       if((ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch>=48 && ch<=57) || ch==32 || ch==58 || ch==44)
-       {
-          Serial.print(ch); 
-       }
+        myTime = s;
       }
+      else if(count == 1)
+      {
+        numberOfAlarms = s.toInt();
+      }
+      else if(count == (2 + 2*numberOfAlarms))
+      {
+        volume = s;
+      }
+      else if(count == (2 + 2*numberOfAlarms + 1))
+      {
+        vibration = s;
+      }
+      else
+      {
+        if (count%2 == 0)
+        {
+          alarmeList[(count/2)-1].setTme(s);  
+        }
+        else if(count%2 == 1)
+        {
+          alarmeList[(count-3)/2].setMsg(s);
+        }
+      }
+      count++;
+      entireMsg = entireMsg + s;
     }
-    
   }
 }
 
 void addAlarm()
 {
-  
+  Serial.println("A.A");
+  int count = 0;
+  while(true)
+  {
+    char c = Serial.read();
+    if (c == '=')
+    {
+      printRoutine();
+      return;
+    }
+    if(c == '{')
+    {
+      String s = tokenizeWord();
+      if (count == 0)
+      {
+        numberOfAlarms = s.toInt();
+      }
+      else if (count == 1)
+      {
+        alarmeList[numberOfAlarms-1].setTme(s);
+      }
+      else if (count == 2)
+      {
+        alarmeList[numberOfAlarms-1].setMsg(s);        
+      }
+      count++;
+    }
+  }  
 }
 
 void deleteAlarm()
 {
-  
+  Serial.println("D.A.");
+  int count = 0;
+  while(true)
+  {
+    char c = Serial.read();
+    if (c == '=')
+    {
+      alarmeList[3].setTme("Testing");
+      alarmeList[3].setMsg("Testing");
+      printRoutine();
+      return;
+    }
+    if(c == '{')
+    {
+      String s = tokenizeWord();
+      if (count == 0)
+      {
+        numberOfAlarms = s.toInt();
+      }
+      else 
+      {
+        if (count%2 == 1)
+        {
+          alarmeList[(count-1)/2].setTme(s);  
+        }
+        else if(count%2 == 0)
+        {
+          alarmeList[(count-2)/2].setMsg(s);
+        }
+      }
+      count++;
+    }
+  }  
 }
 
 void updateVolume()
 {
-  
+  Serial.println("Up.Vol.");
+  while(true)
+  {
+    char c = Serial.read();
+    if (c == '=')
+    {
+      printRoutine();
+      return;
+    }
+    if(c == '{')
+    {
+      String s = tokenizeWord();
+      volume = s;
+    }
+  }
 }
 
 void updateVibration()
 {
-  
+  Serial.println("Up.Vib.");
+  while(true)
+  {
+    char c = Serial.read();
+    if (c == '=')
+    {
+      printRoutine();
+      return;
+    }
+    if(c == '{')
+    {
+      String s = tokenizeWord();
+      vibration = s;
+    }
+  }
 }
 
 void showTimeScreen()
@@ -275,5 +425,42 @@ void showSVScreen(int volume, int vibration)
     x_start = x_start + rect_width + 2;
   }
   display.display();
+}
+
+String tokenizeWord()
+{
+  String tokenizedWord = "";
+  //Serial.print("\n");
+  while(true)
+  {
+    char ch = Serial.read();
+    if(ch == '}')
+    {
+      //Serial.println(tokenizedWord);
+      return tokenizedWord;
+    }
+    
+    // Upper Case || Lower Case || Numbers || space || colon || comma
+    if((ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch>=48 && ch<=57) || ch==32 || ch==58 || ch==44)
+    {
+      tokenizedWord = tokenizedWord + ch;
+      //Serial.print(ch); 
+    }
+  }
+}
+
+void printRoutine()
+{
+  Serial.println(numberOfAlarms);
+  Serial.println(alarmeList[0].getTme());
+  Serial.println(alarmeList[0].getMsg());
+  Serial.println(alarmeList[1].getTme());
+  Serial.println(alarmeList[1].getMsg());
+  Serial.println(alarmeList[2].getTme());
+  Serial.println(alarmeList[2].getMsg());
+  Serial.println(alarmeList[3].getTme());
+  Serial.println(alarmeList[3].getMsg());
+  Serial.println(volume);
+  Serial.println(vibration);
 }
 

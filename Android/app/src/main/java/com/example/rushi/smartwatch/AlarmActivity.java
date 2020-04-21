@@ -2,6 +2,7 @@ package com.example.rushi.smartwatch;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -78,6 +79,15 @@ public class AlarmActivity extends AppCompatActivity {
                 if(deletedAlarmPosition != -1)
                 {
                     FirebaseFetchService.deleteAlarm(alarmList.get(deletedAlarmPosition).getAlarmTime(), alarmList.get(deletedAlarmPosition).getMessage());
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run()
+                        {
+                            BluetoothCommService.deleteAlarm();
+                        }
+                    }, 1000);
+
                     alarmCustomAdapter.remove(alarmList.get(deletedAlarmPosition));
                     deletedAlarmPosition = -1;
                     alarmCustomAdapter.notifyDataSetChanged();

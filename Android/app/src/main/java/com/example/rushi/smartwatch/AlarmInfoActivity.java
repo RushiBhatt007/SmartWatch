@@ -2,6 +2,7 @@ package com.example.rushi.smartwatch;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,6 +66,15 @@ public class AlarmInfoActivity extends AppCompatActivity {
                     Long longTime = System.currentTimeMillis()/1000;
                     String timestamp = longTime.toString();
                     FirebaseFetchService.addAlarms(newAlarm, timestamp);
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run()
+                        {
+                            BluetoothCommService.addAlarm();
+                        }
+                    }, 1000);
+
                     Intent nextActivity = new Intent(AlarmInfoActivity.this, AlarmActivity.class);
                     startActivity(nextActivity);
                     remainingTime = hour+":"+minute+ampm;

@@ -270,7 +270,7 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("0");
+            initiateSend("~");
             sendData(myTime);
             sendData(numberOfAlarms+"");
 
@@ -282,6 +282,75 @@ public class BluetoothCommService extends Service {
 
             sendData(volume);
             sendData(vibration);
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+
+    public static void addAlarm()
+    {
+        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
+        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
+        try
+        {
+            initiateSend("!");
+            sendData(numberOfAlarms+"");
+            sendData(alarms.get(numberOfAlarms-1).getAlarmTime());
+            sendData(alarms.get(numberOfAlarms-1).getMessage());
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+
+    public static void deleteAlarm()
+    {
+        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
+        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
+        try
+        {
+            initiateSend("@");
+            sendData(numberOfAlarms+"");
+            for(int i=0; i<numberOfAlarms; i++)
+            {
+                sendData(alarms.get(i).getAlarmTime());
+                sendData(alarms.get(i).getMessage());
+            }
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+
+    public static void updateVolume()
+    {
+        String volume = FirebaseFetchService.getVolume();   //D
+        try
+        {
+            initiateSend("#");
+            sendData(volume+"");
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+
+    public static void updateVibration()
+    {
+        String vibration = FirebaseFetchService.getVibration();   //D
+        try
+        {
+            initiateSend("$");
+            sendData(vibration+"");
             terminateSend("=");
         }
         catch (IOException e)

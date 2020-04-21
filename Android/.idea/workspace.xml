@@ -11,17 +11,14 @@
     <option name="TOOL_WINDOW_REGEXP_FILTER" value="false" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="58ed187f-73a9-48c1-abce-f64194711f73" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Arduino/scratch_pad/scratch_pad.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino/scratch_pad/scratch_pad.ino" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Arduino/smartwatch/smartwatch.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino/smartwatch/smartwatch.ino" afterDir="false" />
-    </list>
+    <list default="true" id="58ed187f-73a9-48c1-abce-f64194711f73" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_2_API_29" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="b661e42c" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -51,7 +48,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="b661e42c" />
-    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-03-27T07:30:45.187Z" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-04-20T10:14:41.902Z" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
