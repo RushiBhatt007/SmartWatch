@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,8 +49,6 @@ public class BluetoothCommService extends Service {
 
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     String MACAddress = "00:19:08:35:F6:00";
-
-    private static String myTime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());    //A
 
     private static String CONNECTED_DEVICE = null;
     private static int STATUS = -1;
@@ -262,6 +262,8 @@ public class BluetoothCommService extends Service {
 
     public static void initializeVariables()
     {
+        String myTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());   //A
+        String[] myTimeSplit = myTime.split(":");
         int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
         ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
 
@@ -271,7 +273,10 @@ public class BluetoothCommService extends Service {
         try
         {
             initiateSend("~");
-            sendData(myTime);
+            for(int i=0; i<myTimeSplit.length; i++)
+            {
+                sendData(myTimeSplit[i]);
+            }
             sendData(numberOfAlarms+"");
 
             for(int i=0; i<numberOfAlarms; i++)

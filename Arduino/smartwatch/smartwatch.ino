@@ -90,7 +90,9 @@ char* disptime="";
 
 // Variables
 alarme alarmeList[4];
-String myTime="";
+String myTime1="";
+String myTime2="";
+String myTime3="";
 int numberOfAlarms=-1;
 String volume="";
 String vibration="";
@@ -102,6 +104,8 @@ int PWMPin = 9; // Output of PWM
 
 int screenBrowseButton = 5;
 int readScreenBrowseButton = 0;
+
+int triggerSOSButton = 2; // ISR can be pin 2 or 3
 
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
@@ -115,14 +119,15 @@ void setup()
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x64)
   display.display();
   display.clearDisplay();
+  attachInterrupt(digitalPinToInterrupt(triggerSOSButton), triggerSOSInterrupt, CHANGE);
   showTimeScreen();
-
+  
   for (int i=0; i<4;i++)
     alarmeList[i] = alarme("Test", "Test");
 }
 
 void loop() 
-{  
+{
   // Listen to Changes on App
   if(Serial.available())
   {
@@ -159,15 +164,16 @@ void loop()
     if(readScreenBrowseButton%6 == 0)
       showTimeScreen();
     else if(readScreenBrowseButton%6 == 1)
-      showSVScreen(2,2);
+      showSVScreen(volume.toInt(),vibration.toInt());
     else if(readScreenBrowseButton%6 == 2)
       showAlarmListScreen();
     else if(readScreenBrowseButton%6 == 3)
-      showAlarmScreen();
+      showAlarmScreen(alarmeList[readScreenBrowseButton%4]);
     else if(readScreenBrowseButton%6 == 4)
       showFMWScreen();
     else if(readScreenBrowseButton%6 == 5)
-      showSOSScreen();
+      showFMWScreen();
+      //showSOSScreen();
   }
 }
 
@@ -190,17 +196,25 @@ void initializeAllVariables()
       String s = tokenizeWord();
       if(count == 0)
       {
-        myTime = s;
+        myTime1 = s;
       }
       else if(count == 1)
       {
+        myTime2 = s;
+      }
+      else if(count == 2)
+      {
+        myTime3 = s;
+      }
+      else if(count == 3)
+      {
         numberOfAlarms = s.toInt();
       }
-      else if(count == (2 + 2*numberOfAlarms))
+      else if(count == (4 + 2*numberOfAlarms))
       {
         volume = s;
       }
-      else if(count == (2 + 2*numberOfAlarms + 1))
+      else if(count == (4 + 2*numberOfAlarms + 1))
       {
         vibration = s;
       }
@@ -368,16 +382,16 @@ void showFMWScreen()
   display.display();
 }
 
-void showAlarmScreen()
+void showAlarmScreen(alarme alarme1)
 {
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(12,4);
-  display.println("12:45 AM");
+  display.println(alarme1.getTme());
   display.setTextSize(1);
   display.setCursor(10,22);
-  display.println("Take acidity pills");
+  display.println(alarme1.getMsg());
   display.display();
 }
 
@@ -387,10 +401,13 @@ void showAlarmListScreen()
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
-  display.println("Alarm 1 - 12:45 AM");
-  display.println("Alarm 2 - 01:20 PM");
-  display.println("Alarm 3 - 12:45 AM");
-  display.println("Alarm 4 - 01:20 PM");
+  for(int i=0; i<4; i++)
+  {
+    char c = '1'+i;
+    String j;
+    j.concat(c);
+    display.println("Alarm "+j+" - "+alarmeList[i].getTme());
+  }
   display.display();
 }
 
@@ -420,11 +437,16 @@ void showSVScreen(int volume, int vibration)
   for(i=1;i<=53
   ;i++)
   {
-    int colorShow = volume>=i?WHITE:BLACK;
+    int colorShow = vibration>=i?WHITE:BLACK;
     display.fillRect(x_start, y_start, rect_width, rect_height, colorShow);
     x_start = x_start + rect_width + 2;
   }
   display.display();
+}
+
+void triggerSOSInterrupt()
+{
+  showSOSScreen();
 }
 
 String tokenizeWord()
@@ -451,6 +473,9 @@ String tokenizeWord()
 
 void printRoutine()
 {
+  Serial.println("Hr: "+myTime1);
+  Serial.println("Min: "+myTime2);
+  Serial.println("Sec: "+myTime3);
   Serial.println(numberOfAlarms);
   Serial.println(alarmeList[0].getTme());
   Serial.println(alarmeList[0].getMsg());

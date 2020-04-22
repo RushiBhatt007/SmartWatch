@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         {
             ConnectImage.setImageAlpha(32);
             SVButton.setEnabled(false);
-            //AlarmButton.setEnabled(false);
-            //SOSButton.setEnabled(false);
+            AlarmButton.setEnabled(false);
+            SOSButton.setEnabled(false);
             FMWButton.setEnabled(false);
         }
 
@@ -160,8 +160,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         GMailThread.start();
-
-
     }
 
     private void onConnectButtonClick()
@@ -204,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         BTThread.start();
-
 
         Intent FBForeground = new Intent(MainActivity.this, FirebaseFetchService.class);
         FBForeground.setAction("fetch");
