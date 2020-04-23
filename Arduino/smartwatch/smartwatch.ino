@@ -83,9 +83,8 @@ class alarm
 Adafruit_SSD1306 display(OLED_RESET);
 
 char* tim;
-int h1, h2, m1, m2, s1, s2, ampm;
+int h1=0, h2=0, m1=0, m2=0, s1=0, s2=0, ampm=0;
 int h, m, s; 
-char* disptime="";
 
 
 // Variables
@@ -105,7 +104,11 @@ int PWMPin = 9; // Output of PWM
 int screenBrowseButton = 5;
 int readScreenBrowseButton = 0;
 
+int currentScreen = 0;
+
 int triggerSOSButton = 2; // ISR can be pin 2 or 3
+
+int ultimateCount = 0;
 
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
@@ -128,6 +131,7 @@ void setup()
 
 void loop() 
 {
+  int startTime = millis();
   // Listen to Changes on App
   if(Serial.available())
   {
@@ -161,20 +165,38 @@ void loop()
   if(digitalRead(screenBrowseButton) == HIGH)
   {
     readScreenBrowseButton++;
-    if(readScreenBrowseButton%6 == 0)
+    if(readScreenBrowseButton%3 == 0)
+    {
       showTimeScreen();
-    else if(readScreenBrowseButton%6 == 1)
+      currentScreen = 0;
+    }
+    else if(readScreenBrowseButton%3 == 1)
+    {
       showSVScreen(volume.toInt(),vibration.toInt());
-    else if(readScreenBrowseButton%6 == 2)
+      currentScreen = 1;
+    }
+    else if(readScreenBrowseButton%3 == 2)
+    {
       showAlarmListScreen();
-    else if(readScreenBrowseButton%6 == 3)
-      showAlarmScreen(alarmeList[readScreenBrowseButton%4]);
-    else if(readScreenBrowseButton%6 == 4)
-      showFMWScreen();
-    else if(readScreenBrowseButton%6 == 5)
-      showFMWScreen();
-      //showSOSScreen();
+      currentScreen = 2;
+    }
   }
+  else
+  {
+    // Allow Time updation when button not clicked
+    if(currentScreen == 0)
+      showTimeScreen();
+    else if(currentScreen == 1)
+      showSVScreen(volume.toInt(),vibration.toInt());
+    else if(currentScreen == 2)
+      showAlarmListScreen();
+  }
+
+  if(ultimateCount % 4 == 0)
+  {
+    oldLogicUpdation();
+  }
+  ultimateCount++;
 }
 
 void initializeAllVariables()
@@ -187,7 +209,8 @@ void initializeAllVariables()
     char c = Serial.read();
     if (c == '=')
     {
-      // Works Well
+      // Old logic for initializtion
+      oldLogicInitialization();
       printRoutine();
       return;
     }
@@ -197,14 +220,20 @@ void initializeAllVariables()
       if(count == 0)
       {
         myTime1 = s;
+        h1 = int(myTime1[0]-48);
+        h2 = int(myTime1[1]-48);
       }
       else if(count == 1)
       {
         myTime2 = s;
+        m1 = int(myTime2[0]-48);
+        m2 = int(myTime2[1]-48);
       }
       else if(count == 2)
       {
         myTime3 = s;
+        s1 = int(myTime3[0]-48);
+        s2 = int(myTime3[1]-48);
       }
       else if(count == 3)
       {
@@ -348,7 +377,21 @@ void showTimeScreen()
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
-  display.println("18:25 PM");
+  String disptime = "          ";
+  disptime[0] = h1+48;
+  disptime[1] = h2+48;
+  disptime[2] = ':';
+  disptime[3] = m1+48;
+  disptime[4] = m2+48;
+  disptime[5] = ':';
+  disptime[6] = s1+48;
+  disptime[7] = s2+48;
+  if(ampm==0)
+    disptime[8] = 'A';
+  else
+    disptime[8] = 'P';
+  disptime[9] = 'M';
+  display.print(disptime);
   display.display();
 }
 
@@ -449,16 +492,76 @@ void triggerSOSInterrupt()
   showSOSScreen();
 }
 
+void oldLogicInitialization()
+{
+  ampm=0;
+  if (h1==0 && h2==0)
+  {
+    h1=1;
+    h2=2;
+    ampm = 0;
+  }
+  else if(h1*10+h2>12)
+  {
+    ampm=1;
+    if (h2>=2)
+    {
+      h2-=2;
+      h1-=1;
+    }
+    else
+    {
+      h2+=8;
+      h1-=2;
+    }
+  }
+}
+
+void oldLogicUpdation()
+{
+  if (s2==9){
+    s2 = 0;
+    if (s1!=5){
+      s1+=1;
+    }else{
+      s1 = 0;
+      if (m2!=9){
+        m2+=1;
+      }else{
+        m2=0;
+        if(m1!=5){
+          m1+=1;
+        }else{
+          m1=0;
+          if (h1*10+h2!=12){
+            ampm=((-1)*ampm) +1;
+            if(h2!=9){
+              h2+=1;
+            }else{
+              h2=0;
+              h1+=1;
+            }
+          }else{
+            h2=1;
+            h1=0;
+          }
+        }
+      }
+    }
+  }
+  else{
+    s2+=1;
+  }
+}
+
 String tokenizeWord()
 {
   String tokenizedWord = "";
-  //Serial.print("\n");
   while(true)
   {
     char ch = Serial.read();
     if(ch == '}')
     {
-      //Serial.println(tokenizedWord);
       return tokenizedWord;
     }
     
@@ -466,7 +569,6 @@ String tokenizeWord()
     if((ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch>=48 && ch<=57) || ch==32 || ch==58 || ch==44)
     {
       tokenizedWord = tokenizedWord + ch;
-      //Serial.print(ch); 
     }
   }
 }
@@ -477,14 +579,11 @@ void printRoutine()
   Serial.println("Min: "+myTime2);
   Serial.println("Sec: "+myTime3);
   Serial.println(numberOfAlarms);
-  Serial.println(alarmeList[0].getTme());
-  Serial.println(alarmeList[0].getMsg());
-  Serial.println(alarmeList[1].getTme());
-  Serial.println(alarmeList[1].getMsg());
-  Serial.println(alarmeList[2].getTme());
-  Serial.println(alarmeList[2].getMsg());
-  Serial.println(alarmeList[3].getTme());
-  Serial.println(alarmeList[3].getMsg());
+  for (int i=0; i<4; i++)
+  {
+    Serial.println(alarmeList[i].getTme());
+    Serial.println(alarmeList[i].getMsg());
+  }
   Serial.println(volume);
   Serial.println(vibration);
 }
