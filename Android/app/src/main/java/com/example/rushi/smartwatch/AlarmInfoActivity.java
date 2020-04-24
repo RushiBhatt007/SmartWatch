@@ -36,42 +36,53 @@ public class AlarmInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int hr = alarmTimePicker.getHour();
                 int min = alarmTimePicker.getMinute();
-                String ampm;
+                int ampm;   // 0 is AM, 1 is PM
                 if(hr > 12)
                 {
-                    ampm = " PM";
+                    ampm = 1;
                     hr = hr-12;
                 }
                 else if(hr == 0)
                 {
                     hr = hr+12;
-                    ampm = " AM";
+                    ampm = 0;
                 }
                 else if(hr == 12)
                 {
-                    ampm = " PM";
+                    ampm = 1;
                 }
                 else
                 {
-                    ampm = " AM";
+                    ampm = 0;
                 }
                 String hour = hr+"";
                 String minute = min>9?min+"":"0"+min;
+
+                String alarmTime = hour+":"+minute+" ";
+                alarmTime = alarmTime + (ampm==0?"AM":"PM");
 
                 String message = messageEditText.getText().toString();
 
                 if(!message.equals(""))
                 {
-                    newAlarm = new Alarm(hour+":"+minute+ampm, message);
+                    newAlarm = new Alarm(alarmTime, hour, minute, ampm, message);
                     Long longTime = System.currentTimeMillis()/1000;
                     String timestamp = longTime.toString();
                     FirebaseFetchService.addAlarms(newAlarm, timestamp);
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    Handler handler1 = new Handler();
+                    handler1.postDelayed(new Runnable() {
                         public void run()
                         {
-                            BluetoothCommService.addAlarm();
+                            BluetoothCommService.updateAlarmTime();
+                        }
+                    }, 1000);
+
+                    Handler handler2 = new Handler();
+                    handler2.postDelayed(new Runnable() {
+                        public void run()
+                        {
+                            BluetoothCommService.updateAlarmMessage();
                         }
                     }, 1000);
 

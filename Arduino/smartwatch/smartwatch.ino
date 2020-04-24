@@ -19,62 +19,14 @@ class keyValue
     value = value1;
   }
 
-  String getKey()
-  {
-    return key;
-  }
+  String getKey() { return key;}
 
-  String getValue()
-  {
-    return value;
-  }
+  String getValue() {return value;}
 
-  void setKey(String key1)
-  {
-    key = key1;
-  }
+  void setKey(String key1) {key = key1;}
 
-  void setValue(String value1)
-  {
-    value = value1;
-  }
+  void setValue(String value1) {value = value1;}
 };
-
-class alarme
-{
-  public:
-  String tme, msg;
-  
-  alarme(){
-  }
-
-  alarme(String tme1, String msg1)
-  {
-    tme = tme1;
-    msg = msg1;
-  }
-
-  void setTme(String tme1)
-  {
-    tme = tme1;
-  }
-
-  void setMsg(String msg1)
-  {
-    msg=msg1;
-  }
-  
-  String getTme()
-  {
-    return tme;
-  }
-
-  String getMsg()
-  {
-    return msg;
-  }
-};
-
 
 class alarm
 {
@@ -82,7 +34,12 @@ class alarm
   int h, m, ampm;
   String msg;
   
-  alarm(){
+  alarm()
+  {
+    h = 0;
+    m = 0;
+    ampm = -1;
+    msg = "";
   }
 
   alarm(int h1, int m1, int ampm1, String msg1)
@@ -93,25 +50,21 @@ class alarm
     msg = msg1;
   }
 
-  int getH()
-  {
-    return h;
-  }
+  int getH() {return h;}
   
-  int getM()
-  {
-    return m;
-  }
+  int getM() {return m;}
 
-  int getAmpm()
-  {
-    return ampm;
-  }
+  int getAMPM() {return ampm;}
 
-  String getMsg()
-  {
-    return msg;
-  }
+  String getMsg() {return msg;}
+
+  void setH(int h1) {h = h1;}
+
+  void setM(int m1) {m = m1;}
+
+  void setAMPM(int ampm1) {ampm = ampm1;}
+
+  void setMsg(String msg1) {msg1 = msg;}
 };
 
 #define OLED_RESET 4
@@ -123,14 +76,13 @@ int h, m, s;
 
 
 // Variables
-alarme alarmeList[4];
+alarm alarmList[4];
 String myTime1="";
 String myTime2="";
 String myTime3="";
 int numberOfAlarms=-1;
 String volume="";
 String vibration="";
-
 
 int speak = 6;  // Button for speak
 int vibr = 7;   // Button for vibrator
@@ -159,9 +111,9 @@ void setup()
   display.clearDisplay();
   attachInterrupt(digitalPinToInterrupt(triggerSOSButton), triggerSOSInterrupt, CHANGE);
   showTimeScreen();
-  
-  for (int i=0; i<4;i++)
-    alarmeList[i] = alarme("Test", "Test");
+
+  for (int i=0; i<4; i++)
+    alarmList[i] = alarm();
 }
 
 void loop() 
@@ -174,22 +126,6 @@ void loop()
     {
       fetchVariables();
       //initializeAllVariables();
-    }
-    else if(c == '!')
-    {
-      addAlarm();
-    }
-    else if(c == '@')
-    {
-      deleteAlarm();
-    }
-    else if(c == '#')
-    {
-      updateVolume();
-    }
-    else if(c == '$')
-    {
-      updateVibration();
     }
   }
 
@@ -249,242 +185,104 @@ void fetchVariables()
     if (c == '{')
     {
       keyValue fetch = extractKeyValue();
-      Serial.println("key: "+ fetch.getKey());
-      Serial.println("value: "+ fetch.getValue());
-      if (fetch.getKey() == "hr")
+      String key = fetch.getKey();
+      String value = fetch.getValue();
+      Serial.println("key: "+ key);
+      Serial.println("value: "+ value);
+      if (key == "hr")
       {
-        String tempHour = fetch.getValue();
+        String tempHour = value;
         h1 = int(tempHour[0]-48);
         h2 = int(tempHour[1]-48);
       }
-      else if (fetch.getKey() == "min")
+      else if (key == "min")
       {
-        String tempMin = fetch.getValue();
+        String tempMin = value;
         m1 = int(tempMin[0]-48);
         m2 = int(tempMin[1]-48);
       }
-      else if (fetch.getKey() == "sec")
+      else if (key == "sec")
       {
-        String tempSec = fetch.getValue();
+        String tempSec = value;
         s1 = int(tempSec[0]-48);
         s2 = int(tempSec[1]-48);
       }
-      else if (fetch.getKey() == "noa")
+      else if (key == "noa")
       {
-        numberOfAlarms = fetch.getValue().toInt();
+        numberOfAlarms = value.toInt();
       }
-      else if (fetch.getKey() == "t0")
+      else if (key == "h0")
       {
-        alarmeList[0].setTme(fetch.getValue());
+        alarmList[0].setH(value.toInt());
       }
-      else if (fetch.getKey() == "m0")
+      else if (key == "m0")
       {
-        alarmeList[0].setMsg(fetch.getValue());
+        alarmList[0].setM(value.toInt());
       }
-      else if (fetch.getKey() == "t1")
+      else if (key == "ap0")
       {
-        alarmeList[1].setTme(fetch.getValue());
+        alarmList[0].setAMPM(value.toInt());
       }
-      else if (fetch.getKey() == "m1")
+      else if (key == "ms0")
       {
-        alarmeList[1].setMsg(fetch.getValue());
+        alarmList[0].setMsg(value);
       }
-      else if (fetch.getKey() == "t2")
+      else if (key == "h1")
       {
-        alarmeList[2].setTme(fetch.getValue());
+        alarmList[1].setH(value.toInt());
       }
-      else if (fetch.getKey() == "m2")
+      else if (key == "m1")
       {
-        alarmeList[2].setMsg(fetch.getValue());
+        alarmList[1].setM(value.toInt());
       }
-      else if (fetch.getKey() == "t3")
+      else if (key == "ap1")
       {
-        alarmeList[3].setTme(fetch.getValue());
+        alarmList[1].setAMPM(value.toInt());
       }
-      else if (fetch.getKey() == "m3")
+      else if (key == "ms1")
       {
-        alarmeList[3].setMsg(fetch.getValue());
+        alarmList[1].setMsg(value);
       }
-      else if (fetch.getKey() == "vo")
+      else if (key == "h2")
       {
-        volume = fetch.getValue();
+        alarmList[2].setH(value.toInt());
       }
-      else if (fetch.getKey() == "vi")
+      else if (key == "m2")
       {
-        vibration = fetch.getValue();
+        alarmList[2].setM(value.toInt());
       }
-    }
-  }
-}
-
-void initializeAllVariables()
-{
-  String entireMsg = "";
-  int count = 0;
-  Serial.print("IV\n");
-  while(true)
-  {
-    char c = Serial.read();
-    if (c == '=')
-    {
-      // Old logic for initializtion
-      oldLogicInitialization();
-      printRoutine();
-      return;
-    }
-    if(c == '{')
-    {
-      String s = tokenizeWord();
-      if(count == 0)
+      else if (key == "ap2")
       {
-        myTime1 = s;
-        h1 = int(myTime1[0]-48);
-        h2 = int(myTime1[1]-48);
+        alarmList[2].setAMPM(value.toInt());
       }
-      else if(count == 1)
+      else if (key == "ms2")
       {
-        myTime2 = s;
-        m1 = int(myTime2[0]-48);
-        m2 = int(myTime2[1]-48);
+        alarmList[2].setMsg(value);
       }
-      else if(count == 2)
+      else if (key == "h3")
       {
-        myTime3 = s;
-        s1 = int(myTime3[0]-48);
-        s2 = int(myTime3[1]-48);
+        alarmList[3].setH(value.toInt());
       }
-      else if(count == 3)
+      else if (key == "m3")
       {
-        numberOfAlarms = s.toInt();
+        alarmList[3].setM(value.toInt());
       }
-      else if(count == (4 + 2*numberOfAlarms))
+      else if (key == "ap3")
       {
-        volume = s;
+        alarmList[3].setAMPM(value.toInt());
       }
-      else if(count == (4 + 2*numberOfAlarms + 1))
+      else if (key == "ms3")
       {
-        vibration = s;
+        alarmList[3].setMsg(value);
       }
-      else
+      else if (key == "vo")
       {
-        if (count%2 == 0)
-        {
-          alarmeList[(count/2)-1].setTme(s);  
-        }
-        else if(count%2 == 1)
-        {
-          alarmeList[(count-3)/2].setMsg(s);
-        }
+        volume = value;
       }
-      count++;
-      entireMsg = entireMsg + s;
-    }
-  }
-}
-
-void addAlarm()
-{
-  Serial.println("A.A");
-  int count = 0;
-  while(true)
-  {
-    char c = Serial.read();
-    if (c == '=')
-    {
-      printRoutine();
-      return;
-    }
-    if(c == '{')
-    {
-      String s = tokenizeWord();
-      if (count == 0)
+      else if (key == "vi")
       {
-        numberOfAlarms = s.toInt();
+        vibration = value;
       }
-      else if (count == 1)
-      {
-        alarmeList[numberOfAlarms-1].setTme(s);
-      }
-      else if (count == 2)
-      {
-        alarmeList[numberOfAlarms-1].setMsg(s);        
-      }
-      count++;
-    }
-  }  
-}
-
-void deleteAlarm()
-{
-  Serial.println("D.A.");
-  int count = 0;
-  while(true)
-  {
-    char c = Serial.read();
-    if (c == '=')
-    {
-      alarmeList[3].setTme("Testing");
-      alarmeList[3].setMsg("Testing");
-      printRoutine();
-      return;
-    }
-    if(c == '{')
-    {
-      String s = tokenizeWord();
-      if (count == 0)
-      {
-        numberOfAlarms = s.toInt();
-      }
-      else 
-      {
-        if (count%2 == 1)
-        {
-          alarmeList[(count-1)/2].setTme(s);  
-        }
-        else if(count%2 == 0)
-        {
-          alarmeList[(count-2)/2].setMsg(s);
-        }
-      }
-      count++;
-    }
-  }  
-}
-
-void updateVolume()
-{
-  Serial.println("Up.Vol.");
-  while(true)
-  {
-    char c = Serial.read();
-    if (c == '=')
-    {
-      printRoutine();
-      return;
-    }
-    if(c == '{')
-    {
-      String s = tokenizeWord();
-      volume = s;
-    }
-  }
-}
-
-void updateVibration()
-{
-  Serial.println("Up.Vib.");
-  while(true)
-  {
-    char c = Serial.read();
-    if (c == '=')
-    {
-      printRoutine();
-      return;
-    }
-    if(c == '{')
-    {
-      String s = tokenizeWord();
-      vibration = s;
     }
   }
 }
@@ -543,16 +341,22 @@ void showFMWScreen()
   display.display();
 }
 
-void showAlarmScreen(alarme alarme1)
+void showAlarmScreen(alarm alarm1)
 {
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(12,4);
-  display.println(alarme1.getTme());
+  display.print(alarm1.getH());
+  display.print(":");
+  display.print(alarm1.getM());
+  if (alarm1.getAMPM() == 0)
+    display.println("AM");
+  else
+    display.println("PM");
   display.setTextSize(1);
   display.setCursor(10,22);
-  display.println(alarme1.getMsg());
+  display.println(alarm1.getMsg());
   display.display();
 }
 
@@ -564,10 +368,20 @@ void showAlarmListScreen()
   display.setCursor(0,0);
   for(int i=0; i<4; i++)
   {
-    char c = '1'+i;
-    String j;
-    j.concat(c);
-    display.println("Alarm "+j+" - "+alarmeList[i].getTme());
+    if (alarmList[i].getAMPM() != -1)
+    {
+      char c = '1'+i;
+      String j;
+      j.concat(c);
+      display.print("Alarm "+j+" - ");
+      display.print(alarmList[i].getH());
+      display.print(":");
+      display.print(alarmList[i].getM());
+      if (alarmList[i].getAMPM() == 0)
+          display.println("AM");
+        else
+          display.println("PM");  
+    }
   }
   display.display();
 }
@@ -705,8 +519,6 @@ String appendChar(String s, char ch)
   return s;
 }
 
-
-
 void printRoutine()
 {
   Serial.println();
@@ -719,8 +531,14 @@ void printRoutine()
   Serial.println(numberOfAlarms);
   for (int i=0; i<4; i++)
   {
-    Serial.println(alarmeList[i].getTme());
-    Serial.println(alarmeList[i].getMsg());
+    display.print(alarmList[i].getH());
+    display.print(":");
+    display.print(alarmList[i].getM());
+    if (alarmList[i].getAMPM() == 0)
+        display.println("AM");
+      else
+        display.println("PM");  
+    Serial.println(alarmList[i].getMsg());
   }
   Serial.println(volume);
   Serial.println(vibration);

@@ -70,11 +70,19 @@ public class AlarmActivity extends AppCompatActivity {
                 {
                     FirebaseFetchService.deleteAlarm(alarmList.get(deletedAlarmPosition).getAlarmTime(), alarmList.get(deletedAlarmPosition).getMessage());
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    Handler handler1 = new Handler();
+                    handler1.postDelayed(new Runnable() {
                         public void run()
                         {
-                            BluetoothCommService.deleteAlarm();
+                            BluetoothCommService.updateAlarmTime();
+                        }
+                    }, 1000);
+
+                    Handler handler2 = new Handler();
+                    handler2.postDelayed(new Runnable() {
+                        public void run()
+                        {
+                            BluetoothCommService.updateAlarmMessage();
                         }
                     }, 1000);
 

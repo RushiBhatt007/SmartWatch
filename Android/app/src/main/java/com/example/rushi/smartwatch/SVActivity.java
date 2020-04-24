@@ -45,7 +45,7 @@ public class SVActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     public void run()
                     {
-                        BluetoothCommService.updateVolume();
+                        BluetoothCommService.updateSV();
                     }
                 }, 1000);
 
@@ -70,7 +70,7 @@ public class SVActivity extends AppCompatActivity {
                 handler.postDelayed(new Runnable() {
                     public void run()
                     {
-                        BluetoothCommService.updateVibration();
+                        BluetoothCommService.updateSV();
                     }
                 }, 1000);
             }

@@ -94,7 +94,7 @@ public class BluetoothCommService extends Service {
             else
                 notificationBuilder = new Notification.Builder(this);
 
-            Notification notification = notificationBuilder.setContentTitle("Test").setContentText("test text").setContentIntent(pendingIntent).setSmallIcon(R.mipmap.ic_launcher_round).setTicker("Description").setOngoing(true).build();
+            Notification notification = notificationBuilder.setContentTitle("Bluetooth Foreground Service").setContentText("Connected With SmartWatch").setContentIntent(pendingIntent).setSmallIcon(R.mipmap.ic_launcher_round).setTicker("Description").setOngoing(true).build();
             startForeground(1, notification);
             try
             {
@@ -242,25 +242,22 @@ public class BluetoothCommService extends Service {
     public static void initiateSend(String s) throws IOException
     {
         String data = s + '\n';
-        Log.e("Service", "Here at 3");
         outputStream.write(data.getBytes());
     }
 
     public static void sendData(String key, String value) throws IOException
     {
         String data = '{' + key + '*' + value + '}' + '\n';
-        Log.e("Service", "Here at 3");
         outputStream.write(data.getBytes());
     }
 
     public static void terminateSend(String s) throws IOException
     {
         String data = s + '\n';
-        Log.e("Service", "Here at 3");
         outputStream.write(data.getBytes());
     }
 
-    public static void initializeTime()
+    public static void updateTime()
     {
         String myTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());   //A
         String[] myTimeSplit = myTime.split(":");
@@ -281,15 +278,19 @@ public class BluetoothCommService extends Service {
         }
     }
 
-    public static void initializeAlarmTime()
+    public static void updateAlarmTime()
     {
         int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
         ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
+        String alarmHourSend[] = new String[numberOfAlarms];  // Make Tx fast
+        String alarmMinSend[] = new String[numberOfAlarms];
+        int alarmAMPMSend[] = new int[numberOfAlarms];
 
-        String alarmSendArray[] = new String[numberOfAlarms];  // Make Tx fast
         for(int i=0; i<numberOfAlarms; i++)
         {
-            alarmSendArray[i] = alarms.get(i).getAlarmTime();
+            alarmHourSend[i] = alarms.get(i).getAlarmHr();
+            alarmMinSend[i] = alarms.get(i).getAlarmMin();
+            alarmAMPMSend[i] = alarms.get(i).getAlarmAMPM();
         }
 
         try
@@ -298,7 +299,9 @@ public class BluetoothCommService extends Service {
             sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
-                sendData("t"+i, alarmSendArray[i]);
+                sendData("h"+i, alarmHourSend[i]);
+                sendData("m"+i, alarmMinSend[i]);
+                sendData("ap"+i, alarmAMPMSend[i]+"");
             }
             terminateSend("=");
         }
@@ -308,11 +311,10 @@ public class BluetoothCommService extends Service {
         }
     }
 
-    public static void initializeAlarmMessage()
+    public static void updateAlarmMessage()
     {
         int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
         ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
-
         String alarmSendArray[] = new String[numberOfAlarms];  // Make Tx fast
         for(int i=0; i<numberOfAlarms; i++)
         {
@@ -325,7 +327,7 @@ public class BluetoothCommService extends Service {
             sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
-                sendData("m"+i, alarmSendArray[i]);
+                sendData("ms"+i, alarmSendArray[i]);
             }
             terminateSend("=");
         }
@@ -335,7 +337,7 @@ public class BluetoothCommService extends Service {
         }
     }
 
-    public static void initializeSV()
+    public static void updateSV()
     {
         String volume = FirebaseFetchService.getVolume();   //D
         String vibration = FirebaseFetchService.getVibration(); //E
@@ -345,75 +347,6 @@ public class BluetoothCommService extends Service {
             initiateSend("~");
             sendData("vo", volume);
             sendData("vi", vibration);
-            terminateSend("=");
-        }
-        catch (IOException e)
-        {
-
-        }
-    }
-
-    public static void addAlarm()
-    {
-        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
-        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
-        try
-        {
-            initiateSend("!");
-            sendData("noa", numberOfAlarms+"");
-            sendData("at"+(numberOfAlarms-1), alarms.get(numberOfAlarms-1).getAlarmTime());
-            sendData("am"+(numberOfAlarms-1), alarms.get(numberOfAlarms-1).getMessage());
-            terminateSend("=");
-        }
-        catch (IOException e)
-        {
-
-        }
-    }
-
-    public static void deleteAlarm()
-    {
-        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
-        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
-        try
-        {
-            initiateSend("@");
-            sendData("noa", numberOfAlarms+"");
-            for(int i=0; i<numberOfAlarms; i++)
-            {
-                sendData("at"+i, alarms.get(i).getAlarmTime());
-                sendData("am"+i, alarms.get(i).getMessage());
-            }
-            terminateSend("=");
-        }
-        catch (IOException e)
-        {
-
-        }
-    }
-
-    public static void updateVolume()
-    {
-        String volume = FirebaseFetchService.getVolume();   //D
-        try
-        {
-            initiateSend("#");
-            sendData("vol", volume+"");
-            terminateSend("=");
-        }
-        catch (IOException e)
-        {
-
-        }
-    }
-
-    public static void updateVibration()
-    {
-        String vibration = FirebaseFetchService.getVibration();   //D
-        try
-        {
-            initiateSend("$");
-            sendData("vib", vibration+"");
             terminateSend("=");
         }
         catch (IOException e)

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button ConnectButton, SVButton, AlarmButton, SOSButton, FMWButton;
     private ImageView ConnectImage;
-
     private String myDate;
     private String deviceName = null;
 
@@ -41,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         ConnectImage = (ImageView) findViewById(R.id.ConnectImage);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         int a = BluetoothCommService.getSTATUS();
         int b = FirebaseFetchService.getSTATUS();
         if(a==-1 && b==-1)
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //emailAndSMSStuff();
+                // TODO: emailAndSMSStuff();
                 onConnectButtonClick();
             }
         });
@@ -93,6 +93,38 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(nextActivity);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.SyncButton)
+        {
+            Handler handler1 = new Handler();
+            handler1.postDelayed(new Runnable() {
+                public void run()
+                {
+                    BluetoothCommService.updateTime();
+                    BluetoothCommService.updateAlarmMessage();
+                    BluetoothCommService.updateSV();
+                }
+            }, 1000);
+
+            Handler handler2 = new Handler();
+            handler2.postDelayed(new Runnable() {
+                public void run()
+                {
+                    BluetoothCommService.updateAlarmTime();
+                }
+            }, 3000);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private Location getDeviceLoc()
