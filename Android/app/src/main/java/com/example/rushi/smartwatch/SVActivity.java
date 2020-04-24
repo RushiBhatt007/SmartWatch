@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
-
 public class SVActivity extends AppCompatActivity {
     public SeekBar volumeSeekBar, vibrationSeekBar;
     public TextView volumeTextView, vibrationTextView;
@@ -51,14 +49,6 @@ public class SVActivity extends AppCompatActivity {
                     }
                 }, 1000);
 
-                try
-                {
-                    BluetoothCommService.sendData("volume: "+volume+"\n");
-                }
-                catch (IOException e)
-                {
-
-                }
             }
         });
 
@@ -83,15 +73,6 @@ public class SVActivity extends AppCompatActivity {
                         BluetoothCommService.updateVibration();
                     }
                 }, 1000);
-
-                try
-                {
-                    BluetoothCommService.sendData("vibration: "+vibration+"\n");
-                }
-                catch (IOException e)
-                {
-
-                }
             }
         });
     }

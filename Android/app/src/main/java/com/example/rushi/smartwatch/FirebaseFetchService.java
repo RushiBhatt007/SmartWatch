@@ -99,13 +99,23 @@ public class FirebaseFetchService extends Service {
             });
             STATUS=1;
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
+            Handler handler1 = new Handler();
+            handler1.postDelayed(new Runnable() {
                 public void run()
                 {
-                    BluetoothCommService.initializeVariables();
+                    BluetoothCommService.initializeTime();
+                    BluetoothCommService.initializeAlarmTime();
                 }
             }, 4000);
+
+            Handler handler2 = new Handler();
+            handler2.postDelayed(new Runnable() {
+                public void run()
+                {
+                    BluetoothCommService.initializeAlarmMessage();
+                    BluetoothCommService.initializeSV();
+                }
+            }, 5000);
 
             return START_STICKY;
         }

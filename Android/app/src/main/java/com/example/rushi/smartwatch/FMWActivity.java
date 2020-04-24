@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.IOException;
 
 public class FMWActivity extends AppCompatActivity {
 
@@ -35,13 +32,6 @@ public class FMWActivity extends AppCompatActivity {
 
     public void onFWMButtonClick()
     {
-        try {
-            BluetoothCommService.sendData("FWM");
-            //Toast.makeText(getApplicationContext(), "SENT", Toast.LENGTH_SHORT).show();
-        }
-        catch (IOException e)
-        {
-            Toast.makeText(getApplicationContext(), "CANT", Toast.LENGTH_SHORT).show();
-        }
+
     }
 }

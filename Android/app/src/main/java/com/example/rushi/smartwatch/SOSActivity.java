@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class SOSActivity extends AppCompatActivity {
@@ -52,15 +51,6 @@ public class SOSActivity extends AppCompatActivity {
                 {
                     Toast.makeText(getApplicationContext(), "Can not add more than 5 contacts", Toast.LENGTH_SHORT).show();
                 }
-
-                try
-                {
-                    BluetoothCommService.sendData("add contact"+"\n");
-                }
-                catch (IOException e)
-                {
-
-                }
             }
         });
 
@@ -82,14 +72,6 @@ public class SOSActivity extends AppCompatActivity {
                     contactCustomAdapter.remove(contactList.get(deletedContactPosition));
                     deletedContactPosition = -1;
                     contactCustomAdapter.notifyDataSetChanged();
-                    try
-                    {
-                        BluetoothCommService.sendData("delete contact"+"\n");
-                    }
-                    catch (IOException e)
-                    {
-
-                    }
                 }
             }
         });

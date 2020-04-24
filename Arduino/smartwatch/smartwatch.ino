@@ -5,6 +5,41 @@
 #include <TimeLib.h>
 #include <DS1307RTC.h>
 
+class keyValue
+{
+  public:
+  String key, value;
+
+  keyValue(){
+  }
+
+  keyValue(String key1, String value1)
+  {
+    key = key1;
+    value = value1;
+  }
+
+  String getKey()
+  {
+    return key;
+  }
+
+  String getValue()
+  {
+    return value;
+  }
+
+  void setKey(String key1)
+  {
+    key = key1;
+  }
+
+  void setValue(String value1)
+  {
+    value = value1;
+  }
+};
+
 class alarme
 {
   public:
@@ -131,14 +166,14 @@ void setup()
 
 void loop() 
 {
-  int startTime = millis();
   // Listen to Changes on App
   if(Serial.available())
   {
     char c = Serial.read();
     if (c == '~')
     {
-      initializeAllVariables();
+      fetchVariables();
+      //initializeAllVariables();
     }
     else if(c == '!')
     {
@@ -192,11 +227,94 @@ void loop()
       showAlarmListScreen();
   }
 
+  delay(75);
   if(ultimateCount % 4 == 0)
   {
     oldLogicUpdation();
   }
   ultimateCount++;
+}
+
+void fetchVariables()
+{
+  while(true)
+  {
+    char c = Serial.read();
+    if (c == '=')
+    {
+      Serial.println("Fetch Done");
+      printRoutine();
+      return;
+    }
+    if (c == '{')
+    {
+      keyValue fetch = extractKeyValue();
+      Serial.println("key: "+ fetch.getKey());
+      Serial.println("value: "+ fetch.getValue());
+      if (fetch.getKey() == "hr")
+      {
+        String tempHour = fetch.getValue();
+        h1 = int(tempHour[0]-48);
+        h2 = int(tempHour[1]-48);
+      }
+      else if (fetch.getKey() == "min")
+      {
+        String tempMin = fetch.getValue();
+        m1 = int(tempMin[0]-48);
+        m2 = int(tempMin[1]-48);
+      }
+      else if (fetch.getKey() == "sec")
+      {
+        String tempSec = fetch.getValue();
+        s1 = int(tempSec[0]-48);
+        s2 = int(tempSec[1]-48);
+      }
+      else if (fetch.getKey() == "noa")
+      {
+        numberOfAlarms = fetch.getValue().toInt();
+      }
+      else if (fetch.getKey() == "t0")
+      {
+        alarmeList[0].setTme(fetch.getValue());
+      }
+      else if (fetch.getKey() == "m0")
+      {
+        alarmeList[0].setMsg(fetch.getValue());
+      }
+      else if (fetch.getKey() == "t1")
+      {
+        alarmeList[1].setTme(fetch.getValue());
+      }
+      else if (fetch.getKey() == "m1")
+      {
+        alarmeList[1].setMsg(fetch.getValue());
+      }
+      else if (fetch.getKey() == "t2")
+      {
+        alarmeList[2].setTme(fetch.getValue());
+      }
+      else if (fetch.getKey() == "m2")
+      {
+        alarmeList[2].setMsg(fetch.getValue());
+      }
+      else if (fetch.getKey() == "t3")
+      {
+        alarmeList[3].setTme(fetch.getValue());
+      }
+      else if (fetch.getKey() == "m3")
+      {
+        alarmeList[3].setMsg(fetch.getValue());
+      }
+      else if (fetch.getKey() == "vo")
+      {
+        volume = fetch.getValue();
+      }
+      else if (fetch.getKey() == "vi")
+      {
+        vibration = fetch.getValue();
+      }
+    }
+  }
 }
 
 void initializeAllVariables()
@@ -554,30 +672,50 @@ void oldLogicUpdation()
   }
 }
 
-String tokenizeWord()
+keyValue extractKeyValue()
 {
-  String tokenizedWord = "";
+  String key="", value="";
   while(true)
   {
     char ch = Serial.read();
-    if(ch == '}')
+    if(ch == '*')
     {
-      return tokenizedWord;
+      while (true)
+      {
+        char c = Serial.read();
+        if(c == '}')
+        {
+          keyValue abc = keyValue(key, value);
+          return(abc);
+        }
+        value = appendChar(value, c);
+      }
     }
-    
-    // Upper Case || Lower Case || Numbers || space || colon || comma
-    if((ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch>=48 && ch<=57) || ch==32 || ch==58 || ch==44)
-    {
-      tokenizedWord = tokenizedWord + ch;
-    }
+    key = appendChar(key, ch);
   }
 }
 
+String appendChar(String s, char ch)
+{
+  // Upper Case || Lower Case || Numbers || space || colon || comma
+  if((ch>=65 && ch<=90) || (ch>=97 && ch<=122) || (ch>=48 && ch<=57) || ch==32 || ch==58 || ch==44)
+  {
+    s = s + ch;
+  }
+  return s;
+}
+
+
+
 void printRoutine()
 {
-  Serial.println("Hr: "+myTime1);
-  Serial.println("Min: "+myTime2);
-  Serial.println("Sec: "+myTime3);
+  Serial.println();
+  Serial.print(h1);
+  Serial.println(h2);
+  Serial.print(m1);
+  Serial.println(m2);
+  Serial.print(s1);
+  Serial.println(s2);
   Serial.println(numberOfAlarms);
   for (int i=0; i<4; i++)
   {

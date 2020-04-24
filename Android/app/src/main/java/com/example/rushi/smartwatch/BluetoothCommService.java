@@ -246,9 +246,9 @@ public class BluetoothCommService extends Service {
         outputStream.write(data.getBytes());
     }
 
-    public static void sendData(String s) throws IOException
+    public static void sendData(String key, String value) throws IOException
     {
-        String data = '{' + s + '}' + '\n';
+        String data = '{' + key + '*' + value + '}' + '\n';
         Log.e("Service", "Here at 3");
         outputStream.write(data.getBytes());
     }
@@ -260,33 +260,91 @@ public class BluetoothCommService extends Service {
         outputStream.write(data.getBytes());
     }
 
-    public static void initializeVariables()
+    public static void initializeTime()
     {
         String myTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());   //A
         String[] myTimeSplit = myTime.split(":");
-        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
-        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
-
-        String volume = FirebaseFetchService.getVolume();   //D
-        String vibration = FirebaseFetchService.getVibration(); //E
+        String[] myTimeSplitKey = {"hr", "min", "sec"};
 
         try
         {
             initiateSend("~");
             for(int i=0; i<myTimeSplit.length; i++)
             {
-                sendData(myTimeSplit[i]);
+                sendData(myTimeSplitKey[i], myTimeSplit[i]);
             }
-            sendData(numberOfAlarms+"");
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
 
+        }
+    }
+
+    public static void initializeAlarmTime()
+    {
+        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
+        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
+
+        String alarmSendArray[] = new String[numberOfAlarms];  // Make Tx fast
+        for(int i=0; i<numberOfAlarms; i++)
+        {
+            alarmSendArray[i] = alarms.get(i).getAlarmTime();
+        }
+
+        try
+        {
+            initiateSend("~");
+            sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
-                sendData(alarms.get(i).getAlarmTime());
-                sendData(alarms.get(i).getMessage());
+                sendData("t"+i, alarmSendArray[i]);
             }
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
 
-            sendData(volume);
-            sendData(vibration);
+        }
+    }
+
+    public static void initializeAlarmMessage()
+    {
+        int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
+        ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
+
+        String alarmSendArray[] = new String[numberOfAlarms];  // Make Tx fast
+        for(int i=0; i<numberOfAlarms; i++)
+        {
+            alarmSendArray[i] = alarms.get(i).getMessage();
+        }
+
+        try
+        {
+            initiateSend("~");
+            sendData("noa", numberOfAlarms+"");
+            for(int i=0; i<numberOfAlarms; i++)
+            {
+                sendData("m"+i, alarmSendArray[i]);
+            }
+            terminateSend("=");
+        }
+        catch (IOException e)
+        {
+
+        }
+    }
+
+    public static void initializeSV()
+    {
+        String volume = FirebaseFetchService.getVolume();   //D
+        String vibration = FirebaseFetchService.getVibration(); //E
+
+        try
+        {
+            initiateSend("~");
+            sendData("vo", volume);
+            sendData("vi", vibration);
             terminateSend("=");
         }
         catch (IOException e)
@@ -302,9 +360,9 @@ public class BluetoothCommService extends Service {
         try
         {
             initiateSend("!");
-            sendData(numberOfAlarms+"");
-            sendData(alarms.get(numberOfAlarms-1).getAlarmTime());
-            sendData(alarms.get(numberOfAlarms-1).getMessage());
+            sendData("noa", numberOfAlarms+"");
+            sendData("at"+(numberOfAlarms-1), alarms.get(numberOfAlarms-1).getAlarmTime());
+            sendData("am"+(numberOfAlarms-1), alarms.get(numberOfAlarms-1).getMessage());
             terminateSend("=");
         }
         catch (IOException e)
@@ -320,11 +378,11 @@ public class BluetoothCommService extends Service {
         try
         {
             initiateSend("@");
-            sendData(numberOfAlarms+"");
+            sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
-                sendData(alarms.get(i).getAlarmTime());
-                sendData(alarms.get(i).getMessage());
+                sendData("at"+i, alarms.get(i).getAlarmTime());
+                sendData("am"+i, alarms.get(i).getMessage());
             }
             terminateSend("=");
         }
@@ -340,7 +398,7 @@ public class BluetoothCommService extends Service {
         try
         {
             initiateSend("#");
-            sendData(volume+"");
+            sendData("vol", volume+"");
             terminateSend("=");
         }
         catch (IOException e)
@@ -355,7 +413,7 @@ public class BluetoothCommService extends Service {
         try
         {
             initiateSend("$");
-            sendData(vibration+"");
+            sendData("vib", vibration+"");
             terminateSend("=");
         }
         catch (IOException e)
