@@ -64,7 +64,7 @@ class alarm
 
   void setAMPM(int ampm1) {ampm = ampm1;}
 
-  void setMsg(String msg1) {msg1 = msg;}
+  void setMsg(String msg1) {msg = msg1;}
 };
 
 #define OLED_RESET 4
@@ -187,8 +187,8 @@ void fetchVariables()
       keyValue fetch = extractKeyValue();
       String key = fetch.getKey();
       String value = fetch.getValue();
-      Serial.println("key: "+ key);
-      Serial.println("value: "+ value);
+      //Serial.println("key: "+ key);
+      //Serial.println("value: "+ value);
       if (key == "hr")
       {
         String tempHour = value;
@@ -210,6 +210,8 @@ void fetchVariables()
       else if (key == "noa")
       {
         numberOfAlarms = value.toInt();
+        for (int j = numberOfAlarms; j<4; j++)
+          alarmList[j].setAMPM(-1);
       }
       else if (key == "h0")
       {
@@ -522,25 +524,31 @@ String appendChar(String s, char ch)
 void printRoutine()
 {
   Serial.println();
+  Serial.print("Time: ");
   Serial.print(h1);
-  Serial.println(h2);
+  Serial.print(h2);
+  Serial.print(":");
   Serial.print(m1);
-  Serial.println(m2);
+  Serial.print(m2);
+  Serial.print(":");
   Serial.print(s1);
   Serial.println(s2);
+  Serial.print("Number of Alarms: ");
   Serial.println(numberOfAlarms);
   for (int i=0; i<4; i++)
   {
-    display.print(alarmList[i].getH());
-    display.print(":");
-    display.print(alarmList[i].getM());
+    Serial.print(alarmList[i].getH());
+    Serial.print(":");
+    Serial.print(alarmList[i].getM());
     if (alarmList[i].getAMPM() == 0)
-        display.println("AM");
+        Serial.println("AM");
       else
-        display.println("PM");  
+        Serial.println("PM");  
     Serial.println(alarmList[i].getMsg());
   }
+  Serial.print("Volume: ");
   Serial.println(volume);
+  Serial.print("Vibration: ");
   Serial.println(vibration);
 }
 
