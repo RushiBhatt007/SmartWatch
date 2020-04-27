@@ -1,15 +1,28 @@
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
+int buttonFive = 5;
+int buttonTwo = 2;
+
+int count;
+
+int readButtonFive;
+
+void interruptFunction()
+{
+  Serial.println("Interrupt Happened");
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  if(Serial.available())
-  {
-    char c = Serial.read();
-    Serial.println(c);
-  }
-  //delay(2000);
-  //Serial.println("aaaaaaaa");
+void setup() 
+{
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  count = 0;
+  pinMode(buttonFive, INPUT);
+  attachInterrupt(digitalPinToInterrupt(buttonTwo), interruptFunction, CHANGE);
+}
+
+void loop() 
+{
+   readButtonFive = digitalRead(buttonFive);
+   Serial.println(count);
+   count++;
+   delay(10000);
 }

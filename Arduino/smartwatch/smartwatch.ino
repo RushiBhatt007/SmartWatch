@@ -93,7 +93,8 @@ int readScreenBrowseButton = 0;
 
 int currentScreen = 0;
 
-int triggerSOSButton = 2; // ISR can be pin 2 or 3
+int triggerSOSButton = 2; // ISR does not work with OLED; ISR can be pin 2 or 3
+int readSOSButton = 0;
 
 int ultimateCount = 0;
 
@@ -106,10 +107,11 @@ void setup()
   pinMode(speak, INPUT);
   pinMode(vibr, INPUT);
   pinMode(screenBrowseButton, INPUT);
+  pinMode(triggerSOSButton, INPUT);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x64)
   display.display();
   display.clearDisplay();
-  attachInterrupt(digitalPinToInterrupt(triggerSOSButton), triggerSOSInterrupt, CHANGE);
+  //attachInterrupt(digitalPinToInterrupt(triggerSOSButton), triggerSOSInterrupt, RISING);
   showTimeScreen();
 
   for (int i=0; i<4; i++)
@@ -128,9 +130,32 @@ void loop()
       //initializeAllVariables();
     }
   }
-
+  
   // TODO: Trigger SOS Button
-  // TODO: Buzz on Alarm Event
+  readSOSButton = digitalRead(triggerSOSButton);
+  if (readSOSButton == HIGH)
+  {
+    showSOSScreen();
+  }
+  
+  // Alarm Event Check
+  for (int i=0; i<4; i++)
+  {
+    if (alarmList[i].getAMPM() != -1)
+    {
+      if ((h1*10 + h2) == alarmList[i].getH())
+      {
+        if ((m1*10 + m2) == alarmList[i].getM())
+        {
+          if (ampm == alarmList[i].getAMPM())
+          {  
+            // TODO: Mechanism to snooze alarm via button
+            showAlarmScreen(alarmList[i]);
+          }
+        }
+      }
+    }
+  }
   
   // Browse Screen
   if(digitalRead(screenBrowseButton) == HIGH)
@@ -315,8 +340,7 @@ void showTimeScreen()
 
 void showSOSScreen()
 {
-  int i;
-  for(i=5;i>=0;i--)
+  for(int i=5;i>=0;i--)
   {
     display.clearDisplay();
     display.setTextColor(WHITE);
@@ -329,6 +353,7 @@ void showSOSScreen()
     delay(1000);
     display.display();
   }
+  delay(5000);
 }
 
 void showFMWScreen()
@@ -419,11 +444,6 @@ void showSVScreen(int volume, int vibration)
     x_start = x_start + rect_width + 2;
   }
   display.display();
-}
-
-void triggerSOSInterrupt()
-{
-  showSOSScreen();
 }
 
 void oldLogicInitialization()
