@@ -8,7 +8,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private Location getDeviceLoc()
+    public Location getDeviceLoc()
     {
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
@@ -158,33 +158,43 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    private void emailAndSMSStuff()
+    public static void emailAndSMSStuff()
     {
-        Location location = getDeviceLoc();
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
+        String latitude = FirebaseFetchService.getLatitude();
+        String longitude = FirebaseFetchService.getLongitude();
 
         final String phNo = "9426659100";
         final String bodySMS =  "https://maps.google.com/?q="+latitude+","+longitude;
 
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
+        //Not send sms right now
+
+        //SmsManager smsManager = SmsManager.getDefault();
+        //smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
 
         final String username = FirebaseFetchService.getGMailUsername();
-        final String password = FirebaseFetchService.getGMailUsername();
+        final String password = FirebaseFetchService.getGMailPassword();
         final String sub = "TEST Email";
-        final String to = "rybhatt27@gmail.com";
         final String body = "https://maps.google.com/?q="+latitude+","+longitude;
 
-        msg(username);
+        final int numberOfContacts = FirebaseFetchService.getNumberOfContacts();
+        ArrayList<Contact> SOSContacts = FirebaseFetchService.getContacts();
+        final String SOSContactEmails[] = new String[numberOfContacts];
+
+        for(int i=0;i<numberOfContacts; i++)
+        {
+            SOSContactEmails[i] = SOSContacts.get(i).getEmail();
+        }
 
         final Thread GMailThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     GMailSender sender = new GMailSender(username, password);
-                    sender.sendMail(sub, body, username, to);
-                    Log.e("GMailThread", "Email Sent");
+                    for(int j=0;j<numberOfContacts; j++)
+                    {
+                        sender.sendMail(sub, body, username, SOSContactEmails[j]);
+                        Log.e("GMailThread", "Email Sent to "+SOSContactEmails[j]);
+                    }
                 } catch (Exception e)
                 {
                     Log.e("GMailThread", e.getMessage(), e);
@@ -193,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
         });
         GMailThread.start();
     }
+
 
     private void onConnectButtonClick()
     {
@@ -295,6 +306,9 @@ public class MainActivity extends AppCompatActivity {
 
                 myDate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
                 msg(myDate);
+                Location currentLocation = getDeviceLoc();
+                FirebaseFetchService.setLongitude(currentLocation.getLongitude()+"");
+                FirebaseFetchService.setLatitude(currentLocation.getLatitude()+"");
             }
         }, 2000);
 

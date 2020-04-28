@@ -26,6 +26,7 @@ public class FirebaseFetchService extends Service {
     public static int numberOfContacts;
 
     public static String GMailUsername, GMailPassword;
+    public static String longitude, latitude;
 
     public static int STATUS = -1;  //
     public static DatabaseReference database;
@@ -86,6 +87,8 @@ public class FirebaseFetchService extends Service {
             database.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    longitude = dataSnapshot.child("longitude").getValue().toString();
+                    latitude = dataSnapshot.child("latitude").getValue().toString();
                     GMailUsername = dataSnapshot.child("GMailUsername").getValue().toString();
                     GMailPassword = dataSnapshot.child("GMailPassword").getValue().toString();
                     volume = dataSnapshot.child("volume").getValue().toString();
@@ -105,8 +108,6 @@ public class FirebaseFetchService extends Service {
                 {
                     BluetoothCommService.updateTime();
                     BluetoothCommService.updateAlarmMessage();
-                    BluetoothCommService.updateSV();
-
                 }
             }, 4000);
 
@@ -114,6 +115,7 @@ public class FirebaseFetchService extends Service {
             handler2.postDelayed(new Runnable() {
                 public void run()
                 {
+                    BluetoothCommService.updateSV();
                     BluetoothCommService.updateAlarmTime();
                 }
             }, 6000);
@@ -172,6 +174,16 @@ public class FirebaseFetchService extends Service {
         });
     }
 
+    public static String getLongitude()
+    {
+        return longitude;
+    }
+
+    public static String getLatitude()
+    {
+        return latitude;
+    }
+
     public static String getVolume()
     {
         return volume;
@@ -210,6 +222,16 @@ public class FirebaseFetchService extends Service {
     public static String getGMailPassword()
     {
         return GMailPassword;
+    }
+
+    public static void setLongitude(String longitude1)
+    {
+        database.child("longitude").setValue(longitude1);
+    }
+
+    public static void setLatitude(String latitude1)
+    {
+        database.child("latitude").setValue(latitude1);
     }
 
     public static void setVolume(String volume1)

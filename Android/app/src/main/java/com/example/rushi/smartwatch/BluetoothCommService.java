@@ -210,6 +210,8 @@ public class BluetoothCommService extends Service {
                                     public void run()
                                     {
                                         Log.e("Rx S","Received data is: "+data);
+                                        if (data.contains("interrupt"))
+                                            MainActivity.emailAndSMSStuff();
                                     }
                                 });
                             }

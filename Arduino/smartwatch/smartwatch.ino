@@ -136,6 +136,7 @@ void loop()
   if (readSOSButton == HIGH)
   {
     showSOSScreen();
+    Serial.println("interrupt");
   }
   
   // Alarm Event Check
