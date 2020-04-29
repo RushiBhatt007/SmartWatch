@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
         ConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                // TODO: emailAndSMSStuff();
                 onConnectButtonClick();
             }
         });
@@ -158,42 +156,51 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public static void emailAndSMSStuff()
+    public static void sendEmailAndSMS()
     {
         String latitude = FirebaseFetchService.getLatitude();
         String longitude = FirebaseFetchService.getLongitude();
 
-        final String phNo = "9426659100";
-        final String bodySMS =  "https://maps.google.com/?q="+latitude+","+longitude;
-
-        //Not send sms right now
-
-        //SmsManager smsManager = SmsManager.getDefault();
-        //smsManager.sendTextMessage(phNo, null, bodySMS, null, null);
-
-        final String username = FirebaseFetchService.getGMailUsername();
-        final String password = FirebaseFetchService.getGMailPassword();
-        final String sub = "TEST Email";
-        final String body = "https://maps.google.com/?q="+latitude+","+longitude;
+        final String locationURL = "https://maps.google.com/?q="+latitude+","+longitude;
 
         final int numberOfContacts = FirebaseFetchService.getNumberOfContacts();
         ArrayList<Contact> SOSContacts = FirebaseFetchService.getContacts();
+        final String SOSContactNames[] = new String[numberOfContacts];
         final String SOSContactEmails[] = new String[numberOfContacts];
+        final String SOSContactPhone[] = new String[numberOfContacts];
 
         for(int i=0;i<numberOfContacts; i++)
         {
+            SOSContactNames[i] = SOSContacts.get(i).getName();
             SOSContactEmails[i] = SOSContacts.get(i).getEmail();
+            SOSContactPhone[i] = SOSContacts.get(i).getPhone();
         }
+
+        final String bodySMS =  "SOS! I need emergency help (Sent from SmartWatch).\nMy location is: "+locationURL;
+
+        //Not send sms right now
+
+        SmsManager smsManager = SmsManager.getDefault();
+
+        for(int i=0; i<numberOfContacts; i++)
+        {
+            smsManager.sendTextMessage(SOSContactPhone[i], null, SOSContactNames[i]+",\n"+bodySMS, null, null);
+        }
+
+        final String username = FirebaseFetchService.getGMailUsername();
+        final String password = FirebaseFetchService.getGMailPassword();
+        final String sub = "SOS Emergency Email from SmartWatch";
+        final String body = "SOS! I need emergency help (Sent from SmartWatch).\nMy location is: "+locationURL;
 
         final Thread GMailThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     GMailSender sender = new GMailSender(username, password);
-                    for(int j=0;j<numberOfContacts; j++)
+                    for(int i=0;i<numberOfContacts; i++)
                     {
-                        sender.sendMail(sub, body, username, SOSContactEmails[j]);
-                        Log.e("GMailThread", "Email Sent to "+SOSContactEmails[j]);
+                        sender.sendMail(sub, SOSContactNames[i]+",\n"+body, username, SOSContactEmails[i]);
+                        Log.e("GMailThread", "Email Sent to "+SOSContactEmails[i]);
                     }
                 } catch (Exception e)
                 {
@@ -304,8 +311,6 @@ public class MainActivity extends AppCompatActivity {
                 SOSButton.setEnabled(true);
                 FMWButton.setEnabled(true);
 
-                myDate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
-                msg(myDate);
                 Location currentLocation = getDeviceLoc();
                 FirebaseFetchService.setLongitude(currentLocation.getLongitude()+"");
                 FirebaseFetchService.setLatitude(currentLocation.getLatitude()+"");

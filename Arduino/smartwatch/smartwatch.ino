@@ -74,6 +74,13 @@ char* tim;
 int h1=0, h2=0, m1=0, m2=0, s1=0, s2=0, ampm=0;
 int h, m, s; 
 
+int ackHr=0, ackMin=0, ackSec=0;
+int ackNOA=0;
+int ackH0=0, ackM0=0, ackS0=0, ackAMPM0=0, ackMSG0=0;
+int ackH1=0, ackM1=0, ackS1=0, ackAMPM1=0, ackMSG1=0;
+int ackH2=0, ackM2=0, ackS2=0, ackAMPM2=0, ackMSG2=0;
+int ackH3=0, ackM3=0, ackS3=0, ackAMPM3=0, ackMSG3=0;
+int ackVOL=0, ackVIB=0;
 
 // Variables
 alarm alarmList[4];
@@ -111,7 +118,6 @@ void setup()
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x64)
   display.display();
   display.clearDisplay();
-  //attachInterrupt(digitalPinToInterrupt(triggerSOSButton), triggerSOSInterrupt, RISING);
   showTimeScreen();
 
   for (int i=0; i<4; i++)
@@ -120,6 +126,8 @@ void setup()
 
 void loop() 
 {
+  Serial.println("loop");
+  
   // Listen to Changes on App
   if(Serial.available())
   {
@@ -127,7 +135,6 @@ void loop()
     if (c == '~')
     {
       fetchVariables();
-      //initializeAllVariables();
     }
   }
   
@@ -189,6 +196,7 @@ void loop()
       showAlarmListScreen();
   }
 
+  // TODO: Recalculate delay
   delay(75);
   if(ultimateCount % 4 == 0)
   {
@@ -199,6 +207,8 @@ void loop()
 
 void fetchVariables()
 {
+  Serial.println("fetch var");
+
   while(true)
   {
     char c = Serial.read();
@@ -206,6 +216,7 @@ void fetchVariables()
     {
       Serial.println("Fetch Done");
       printRoutine();
+      //sendAcknowledgement();
       return;
     }
     if (c == '{')
@@ -213,103 +224,123 @@ void fetchVariables()
       keyValue fetch = extractKeyValue();
       String key = fetch.getKey();
       String value = fetch.getValue();
-      //Serial.println("key: "+ key);
-      //Serial.println("value: "+ value);
       if (key == "hr")
       {
         String tempHour = value;
         h1 = int(tempHour[0]-48);
         h2 = int(tempHour[1]-48);
+        ackHr = 1;
       }
       else if (key == "min")
       {
         String tempMin = value;
         m1 = int(tempMin[0]-48);
         m2 = int(tempMin[1]-48);
+        ackMin = 1;
       }
       else if (key == "sec")
       {
         String tempSec = value;
         s1 = int(tempSec[0]-48);
         s2 = int(tempSec[1]-48);
+        ackSec = 1;
       }
       else if (key == "noa")
       {
         numberOfAlarms = value.toInt();
         for (int j = numberOfAlarms; j<4; j++)
           alarmList[j].setAMPM(-1);
+        ackNOA = 1;
       }
       else if (key == "h0")
       {
         alarmList[0].setH(value.toInt());
+        ackH0 = 1;
       }
       else if (key == "m0")
       {
         alarmList[0].setM(value.toInt());
+        ackM0 = 1;
       }
       else if (key == "ap0")
       {
         alarmList[0].setAMPM(value.toInt());
+        ackAMPM0 = 1;
       }
       else if (key == "ms0")
       {
         alarmList[0].setMsg(value);
+        ackMSG0 = 1;
       }
       else if (key == "h1")
       {
         alarmList[1].setH(value.toInt());
+        ackH1 = 1;
       }
       else if (key == "m1")
       {
         alarmList[1].setM(value.toInt());
+        ackM1 = 1;
       }
       else if (key == "ap1")
       {
         alarmList[1].setAMPM(value.toInt());
+        ackAMPM1 = 1;
       }
       else if (key == "ms1")
       {
         alarmList[1].setMsg(value);
+        ackMSG1 = 1;
       }
       else if (key == "h2")
       {
         alarmList[2].setH(value.toInt());
+        ackH2 = 1;
       }
       else if (key == "m2")
       {
         alarmList[2].setM(value.toInt());
+        ackM2 = 1;
       }
       else if (key == "ap2")
       {
         alarmList[2].setAMPM(value.toInt());
+        ackAMPM2 = 1;
       }
       else if (key == "ms2")
       {
         alarmList[2].setMsg(value);
+        ackMSG2 = 1;
       }
       else if (key == "h3")
       {
         alarmList[3].setH(value.toInt());
+        ackH3 = 1;
       }
       else if (key == "m3")
       {
         alarmList[3].setM(value.toInt());
+        ackM3 = 1;
       }
       else if (key == "ap3")
       {
         alarmList[3].setAMPM(value.toInt());
+        ackAMPM3 = 1;
       }
       else if (key == "ms3")
       {
         alarmList[3].setMsg(value);
+        ackMSG3 = 1;
       }
       else if (key == "vo")
       {
         volume = value;
+        ackVOL = 1;
       }
       else if (key == "vi")
       {
         vibration = value;
+        ackVIB = 1;
       }
     }
   }
@@ -437,14 +468,45 @@ void showSVScreen(int volume, int vibration)
   y_start = 24;
   display.setCursor(0, 16);
   display.println("Vibration");
-  for(i=1;i<=53
-  ;i++)
+  for(i=1;i<=53;i++)
   {
     int colorShow = vibration>=i?WHITE:BLACK;
     display.fillRect(x_start, y_start, rect_width, rect_height, colorShow);
     x_start = x_start + rect_width + 2;
   }
   display.display();
+}
+
+void sendAcknowledgement()
+{  
+  if (ackHr == 0 || ackMin == 0 || ackSec == 0)
+  {
+    Serial.println("ackTime");
+  }
+  else if (ackNOA == 0 || ackH0 == 0 || ackM0 == 0 || ackS0 == 0 || ackAMPM0 == 0)
+  {
+    Serial.println("ackAlarmTime0");
+  }
+  else if (ackH1 == 0 || ackM1 == 0 || ackS1 == 0 || ackAMPM1 == 0)
+  {
+    Serial.println("ackAlarmTime1");
+  }
+  else if (ackH2 == 0 || ackM2 == 0 || ackS2 == 0 || ackAMPM2 == 0)
+  {
+    Serial.println("ackAlarmTime2");    
+  }
+  else if (ackH3 == 0 || ackM3 == 0 || ackS3 == 0 || ackAMPM3 == 0)
+  {
+    Serial.println("ackAlarmTime3");    
+  }
+  else if (ackMSG0 == 0 || ackMSG1 == 0 || ackMSG2 == 0 || ackMSG3 == 0)
+  {
+    Serial.println("ackAlarmMsg");
+  }
+  else if (ackVOL == 0 || ackVIB == 0)
+  {
+    Serial.println("ackSV");
+  }
 }
 
 void oldLogicInitialization()
@@ -511,6 +573,8 @@ void oldLogicUpdation()
 
 keyValue extractKeyValue()
 {
+  Serial.println("KV");
+
   String key="", value="";
   while(true)
   {

@@ -210,8 +210,52 @@ public class BluetoothCommService extends Service {
                                     public void run()
                                     {
                                         Log.e("Rx S","Received data is: "+data);
+
                                         if (data.contains("interrupt"))
-                                            MainActivity.emailAndSMSStuff();
+                                        {
+                                            MainActivity.sendEmailAndSMS();
+                                        }
+                                        else if (data.contains("ackTime"))
+                                        {
+                                            Handler handler1 = new Handler();
+                                            handler1.postDelayed(new Runnable() {
+                                                public void run()
+                                                {
+                                                    BluetoothCommService.updateTime();
+                                                }
+                                            }, 1000);
+                                        }
+                                        else if (data.contains("ackAlarmTime"))
+                                        {
+                                            Handler handler1 = new Handler();
+                                            handler1.postDelayed(new Runnable() {
+                                                public void run()
+                                                {
+                                                    BluetoothCommService.updateAlarmTime();
+                                                }
+                                            }, 1000);
+                                        }
+                                        else if (data.contains("ackAlarmMsg"))
+                                        {
+                                            Handler handler1 = new Handler();
+                                            handler1.postDelayed(new Runnable() {
+                                                public void run()
+                                                {
+                                                    BluetoothCommService.updateAlarmMessage();
+                                                }
+                                            }, 1000);
+                                        }
+                                        else if (data.contains("ackSV"))
+                                        {
+                                            Handler handler1 = new Handler();
+                                            handler1.postDelayed(new Runnable() {
+                                                public void run()
+                                                {
+                                                    BluetoothCommService.updateSV();
+                                                }
+                                            }, 1000);
+                                        }
+
                                     }
                                 });
                             }
@@ -249,7 +293,7 @@ public class BluetoothCommService extends Service {
 
     public static void sendData(String key, String value) throws IOException
     {
-        String data = '{' + key + '*' + value + '}' + '\n';
+        String data = "{{" + key + "**" + value + "}}" + '\n';
         outputStream.write(data.getBytes());
     }
 
@@ -267,12 +311,12 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~");
+            initiateSend("~~");
             for(int i=0; i<myTimeSplit.length; i++)
             {
                 sendData(myTimeSplitKey[i], myTimeSplit[i]);
             }
-            terminateSend("=");
+            terminateSend("==");
         }
         catch (IOException e)
         {
@@ -297,7 +341,7 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~");
+            initiateSend("~~");
             sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
@@ -305,7 +349,7 @@ public class BluetoothCommService extends Service {
                 sendData("m"+i, alarmMinSend[i]);
                 sendData("ap"+i, alarmAMPMSend[i]+"");
             }
-            terminateSend("=");
+            terminateSend("==");
         }
         catch (IOException e)
         {
@@ -318,6 +362,7 @@ public class BluetoothCommService extends Service {
         int numberOfAlarms = FirebaseFetchService.getNumberOfAlarms();  //B
         ArrayList<Alarm> alarms = FirebaseFetchService.getAlarms();     //C
         String alarmSendArray[] = new String[numberOfAlarms];  // Make Tx fast
+
         for(int i=0; i<numberOfAlarms; i++)
         {
             alarmSendArray[i] = alarms.get(i).getMessage();
@@ -325,13 +370,13 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~");
+            initiateSend("~~");
             sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
                 sendData("ms"+i, alarmSendArray[i]);
             }
-            terminateSend("=");
+            terminateSend("==");
         }
         catch (IOException e)
         {
@@ -346,10 +391,10 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~");
+            initiateSend("~~");
             sendData("vo", volume);
             sendData("vi", vibration);
-            terminateSend("=");
+            terminateSend("==");
         }
         catch (IOException e)
         {
