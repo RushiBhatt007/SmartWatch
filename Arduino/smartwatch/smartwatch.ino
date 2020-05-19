@@ -126,8 +126,6 @@ void setup()
 
 void loop() 
 {
-  Serial.println("loop");
-  
   // Listen to Changes on App
   if(Serial.available())
   {
@@ -417,6 +415,7 @@ void showAlarmScreen(alarm alarm1)
   display.setCursor(10,22);
   display.println(alarm1.getMsg());
   display.display();
+  delay(5000);
 }
 
 void showAlarmListScreen()
