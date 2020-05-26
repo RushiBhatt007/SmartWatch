@@ -24,10 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -215,16 +212,6 @@ public class BluetoothCommService extends Service {
                                         {
                                             MainActivity.sendEmailAndSMS();
                                         }
-                                        else if (data.contains("ackTime"))
-                                        {
-                                            Handler handler1 = new Handler();
-                                            handler1.postDelayed(new Runnable() {
-                                                public void run()
-                                                {
-                                                    BluetoothCommService.updateTime();
-                                                }
-                                            }, 1000);
-                                        }
                                         else if (data.contains("ackAlarmTime"))
                                         {
                                             Handler handler1 = new Handler();
@@ -301,27 +288,6 @@ public class BluetoothCommService extends Service {
     {
         String data = s + '\n';
         outputStream.write(data.getBytes());
-    }
-
-    public static void updateTime()
-    {
-        String myTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());   //A
-        String[] myTimeSplit = myTime.split(":");
-        String[] myTimeSplitKey = {"hr", "min", "sec"};
-
-        try
-        {
-            initiateSend("~~");
-            for(int i=0; i<myTimeSplit.length; i++)
-            {
-                sendData(myTimeSplitKey[i], myTimeSplit[i]);
-            }
-            terminateSend("==");
-        }
-        catch (IOException e)
-        {
-
-        }
     }
 
     public static void updateAlarmTime()

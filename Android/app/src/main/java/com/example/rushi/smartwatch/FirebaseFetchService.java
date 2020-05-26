@@ -106,7 +106,6 @@ public class FirebaseFetchService extends Service {
             handler1.postDelayed(new Runnable() {
                 public void run()
                 {
-                    BluetoothCommService.updateTime();
                     BluetoothCommService.updateAlarmMessage();
                 }
             }, 4000);

@@ -2,8 +2,6 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <TimeLib.h>
-#include <DS1307RTC.h>
 
 class keyValue
 {
@@ -68,13 +66,17 @@ class alarm
 };
 
 #define OLED_RESET 4
+#define RTC_Address 0x68
+
 Adafruit_SSD1306 display(OLED_RESET);
 
-char* tim;
-int h1=0, h2=0, m1=0, m2=0, s1=0, s2=0, ampm=0;
-int h, m, s; 
+char Time[]     = "  :  :    ";
+char Calendar[] = "  /  /20  ";
+char temperature[] = " 00.00";
+char temperature_msb;
+byte i, second, minute, hour, day, date, month, year, temperature_lsb;
+int ampm;
 
-int ackHr=0, ackMin=0, ackSec=0;
 int ackNOA=0;
 int ackH0=0, ackM0=0, ackS0=0, ackAMPM0=0, ackMSG0=0;
 int ackH1=0, ackM1=0, ackS1=0, ackAMPM1=0, ackMSG1=0;
@@ -102,8 +104,6 @@ int currentScreen = 0;
 
 int triggerSOSButton = 2; // ISR does not work with OLED; ISR can be pin 2 or 3
 int readSOSButton = 0;
-
-int ultimateCount = 0;
 
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
@@ -138,7 +138,7 @@ void loop()
   
   // TODO: Trigger SOS Button
   readSOSButton = digitalRead(triggerSOSButton);
-  if (readSOSButton == HIGH)
+  if (readSOSButton == LOW)
   {
     showSOSScreen();
     Serial.println("interrupt");
@@ -149,14 +149,14 @@ void loop()
   {
     if (alarmList[i].getAMPM() != -1)
     {
-      if ((h1*10 + h2) == alarmList[i].getH())
+      if ((int)hour == alarmList[i].getH())
       {
-        if ((m1*10 + m2) == alarmList[i].getM())
+        if ((int)minute == alarmList[i].getM())
         {
           if (ampm == alarmList[i].getAMPM())
-          {  
-            // TODO: Mechanism to snooze alarm via button
-            showAlarmScreen(alarmList[i]);
+          {
+              // TODO: Mechanism to snooze alarm via button
+              showAlarmScreen(alarmList[i]);
           }
         }
       }
@@ -164,7 +164,7 @@ void loop()
   }
   
   // Browse Screen
-  if(digitalRead(screenBrowseButton) == HIGH)
+  if(digitalRead(screenBrowseButton) == LOW)
   {
     readScreenBrowseButton++;
     if(readScreenBrowseButton%3 == 0)
@@ -193,14 +193,6 @@ void loop()
     else if(currentScreen == 2)
       showAlarmListScreen();
   }
-
-  // TODO: Recalculate delay
-  delay(75);
-  if(ultimateCount % 4 == 0)
-  {
-    oldLogicUpdation();
-  }
-  ultimateCount++;
 }
 
 void fetchVariables()
@@ -222,28 +214,7 @@ void fetchVariables()
       keyValue fetch = extractKeyValue();
       String key = fetch.getKey();
       String value = fetch.getValue();
-      if (key == "hr")
-      {
-        String tempHour = value;
-        h1 = int(tempHour[0]-48);
-        h2 = int(tempHour[1]-48);
-        ackHr = 1;
-      }
-      else if (key == "min")
-      {
-        String tempMin = value;
-        m1 = int(tempMin[0]-48);
-        m2 = int(tempMin[1]-48);
-        ackMin = 1;
-      }
-      else if (key == "sec")
-      {
-        String tempSec = value;
-        s1 = int(tempSec[0]-48);
-        s2 = int(tempSec[1]-48);
-        ackSec = 1;
-      }
-      else if (key == "noa")
+      if (key == "noa")
       {
         numberOfAlarms = value.toInt();
         for (int j = numberOfAlarms; j<4; j++)
@@ -350,21 +321,8 @@ void showTimeScreen()
   display.setTextSize(2);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
-  String disptime = "          ";
-  disptime[0] = h1+48;
-  disptime[1] = h2+48;
-  disptime[2] = ':';
-  disptime[3] = m1+48;
-  disptime[4] = m2+48;
-  disptime[5] = ':';
-  disptime[6] = s1+48;
-  disptime[7] = s2+48;
-  if(ampm==0)
-    disptime[8] = 'A';
-  else
-    disptime[8] = 'P';
-  disptime[9] = 'M';
-  display.print(disptime);
+  getRTCTime();
+  display.print(Time);
   display.display();
 }
 
@@ -478,11 +436,7 @@ void showSVScreen(int volume, int vibration)
 
 void sendAcknowledgement()
 {  
-  if (ackHr == 0 || ackMin == 0 || ackSec == 0)
-  {
-    Serial.println("ackTime");
-  }
-  else if (ackNOA == 0 || ackH0 == 0 || ackM0 == 0 || ackS0 == 0 || ackAMPM0 == 0)
+  if (ackNOA == 0 || ackH0 == 0 || ackM0 == 0 || ackS0 == 0 || ackAMPM0 == 0)
   {
     Serial.println("ackAlarmTime0");
   }
@@ -505,68 +459,6 @@ void sendAcknowledgement()
   else if (ackVOL == 0 || ackVIB == 0)
   {
     Serial.println("ackSV");
-  }
-}
-
-void oldLogicInitialization()
-{
-  ampm=0;
-  if (h1==0 && h2==0)
-  {
-    h1=1;
-    h2=2;
-    ampm = 0;
-  }
-  else if(h1*10+h2>12)
-  {
-    ampm=1;
-    if (h2>=2)
-    {
-      h2-=2;
-      h1-=1;
-    }
-    else
-    {
-      h2+=8;
-      h1-=2;
-    }
-  }
-}
-
-void oldLogicUpdation()
-{
-  if (s2==9){
-    s2 = 0;
-    if (s1!=5){
-      s1+=1;
-    }else{
-      s1 = 0;
-      if (m2!=9){
-        m2+=1;
-      }else{
-        m2=0;
-        if(m1!=5){
-          m1+=1;
-        }else{
-          m1=0;
-          if (h1*10+h2!=12){
-            ampm=((-1)*ampm) +1;
-            if(h2!=9){
-              h2+=1;
-            }else{
-              h2=0;
-              h1+=1;
-            }
-          }else{
-            h2=1;
-            h1=0;
-          }
-        }
-      }
-    }
-  }
-  else{
-    s2+=1;
   }
 }
 
@@ -609,14 +501,7 @@ void printRoutine()
 {
   Serial.println();
   Serial.print("Time: ");
-  Serial.print(h1);
-  Serial.print(h2);
-  Serial.print(":");
-  Serial.print(m1);
-  Serial.print(m2);
-  Serial.print(":");
-  Serial.print(s1);
-  Serial.println(s2);
+  Serial.print(Time);
   Serial.print("Number of Alarms: ");
   Serial.println(numberOfAlarms);
   for (int i=0; i<4; i++)
@@ -634,5 +519,107 @@ void printRoutine()
   Serial.println(volume);
   Serial.print("Vibration: ");
   Serial.println(vibration);
+}
+
+void getRTCTime()
+{
+  Wire.beginTransmission(RTC_Address);                 // Start I2C protocol with DS3231 address
+  Wire.write(0);                                // Send register address
+  Wire.endTransmission(false);                  // I2C restart
+  Wire.requestFrom(0x68, 7);                    // Request 7 bytes from DS3231 and release I2C bus at end of reading
+  second = Wire.read();                         // Read seconds from register 0
+  minute = Wire.read();                         // Read minuts from register 1
+  hour   = Wire.read();                         // Read hour from register 2
+  day    = Wire.read();                         // Read day from register 3
+  date   = Wire.read();                         // Read date from register 4
+  month  = Wire.read();                         // Read month from register 5
+  year   = Wire.read();                         // Read year from register 6
+  Wire.beginTransmission(0x68);                 // Start I2C protocol with DS3231 address
+  Wire.write(0x11);                             // Send register address
+  Wire.endTransmission(false);                  // I2C restart
+  Wire.requestFrom(0x68, 2);                    // Request 2 bytes from DS3231 and release I2C bus at end of reading
+  temperature_msb = Wire.read();                // Read temperature MSB
+  temperature_lsb = Wire.read();                // Read temperature LSB
+   
+  DS3231_display();
+}
+
+void DS3231_display()
+{
+  // Convert BCD to decimal
+  second = (second >> 4) * 10 + (second & 0x0F);
+  minute = (minute >> 4) * 10 + (minute & 0x0F);
+  hour   = (hour >> 4)   * 10 + (hour & 0x0F);
+  date   = (date >> 4)   * 10 + (date & 0x0F);
+  month  = (month >> 4)  * 10 + (month & 0x0F);
+  year   = (year >> 4)   * 10 + (year & 0x0F);
+  // End conversion
+
+  
+  if ((int)hour > 12)
+  {
+    ampm = 1; // PM
+    Time[8] = 'P';
+    hour = hour - 12;
+  }
+  else if((int)hour == 0)
+  {
+    ampm = 0; // AM
+    Time[8] = 'A';
+    hour = hour + 12;
+  }
+  else if((int)hour == 12)
+  {
+    Time[8] = 'P';
+    ampm = 1; // PM
+  }
+  else
+  {
+    Time[8] = 'A';
+    ampm = 0; // AM
+  }
+
+  Time[9] = 'M';
+  Time[7]     = second % 10 + 48;
+  Time[6]     = second / 10 + 48;
+  Time[4]     = minute % 10 + 48;
+  Time[3]     = minute / 10 + 48;
+  Time[1]     = hour   % 10 + 48;
+  Time[0]     = hour   / 10 + 48;
+  Calendar[9] = year   % 10 + 48;
+  Calendar[8] = year   / 10 + 48;
+  Calendar[4] = month  % 10 + 48;
+  Calendar[3] = month  / 10 + 48;
+  Calendar[1] = date   % 10 + 48;
+  Calendar[0] = date   / 10 + 48;
+  
+  if(temperature_msb < 0)
+  {
+    temperature_msb = abs(temperature_msb);
+    temperature[0] = '-';
+  }
+  else
+    temperature[0] = ' ';
+  
+  temperature_lsb >>= 6;
+  temperature[2] = temperature_msb % 10  + 48;
+  temperature[1] = temperature_msb / 10  + 48;
+  
+  if(temperature_lsb == 0 || temperature_lsb == 2)
+  {
+    temperature[5] = '0';
+    if(temperature_lsb == 0) 
+      temperature[4] = '0';
+    else                     
+      temperature[4] = '5';
+  }
+  if(temperature_lsb == 1 || temperature_lsb == 3)
+  {
+    temperature[5] = '5';
+    if(temperature_lsb == 1) 
+      temperature[4] = '2';
+    else                     
+      temperature[4] = '7';
+  }
 }
 

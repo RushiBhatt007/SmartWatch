@@ -66,7 +66,7 @@ void setup()
   display.clearDisplay();
 }
 
-void setRTCOnce()
+void setRTCTimeOnce()
 {
     Wire.beginTransmission(RTC_Address);                 // Start I2C protocol with DS3231 address
     Wire.write(0);                                // Send register address
@@ -80,8 +80,8 @@ void setRTCOnce()
     Wire.endTransmission();
 }
 
-void loop() 
-{  
+void getRTCTime()
+{
   Wire.beginTransmission(RTC_Address);                 // Start I2C protocol with DS3231 address
   Wire.write(0);                                // Send register address
   Wire.endTransmission(false);                  // I2C restart
@@ -101,7 +101,11 @@ void loop()
   temperature_lsb = Wire.read();                // Read temperature LSB
    
   DS3231_display();
+}
 
+void loop() 
+{
+  getRTCTime();  
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
