@@ -93,17 +93,22 @@ int numberOfAlarms=-1;
 String volume="";
 String vibration="";
 
-int speak = 6;  // Button for speak
-int vibr = 7;   // Button for vibrator
+// Buttons
 int PWMPin = 9; // Output of PWM
 
+int speakTimeButton = 7;
+int readSpeakTimeButton = HIGH;
+
+int vibrateTimeButton = 6;
+int readVibrateTimeButton = HIGH;
+
 int screenBrowseButton = 5;
-int readScreenBrowseButton = 0;
+int readScreenBrowseButton = HIGH;
 
 int currentScreen = 0;
 
 int triggerSOSButton = 2; // ISR does not work with OLED; ISR can be pin 2 or 3
-int readSOSButton = 0;
+int readSOSButton = HIGH;
 
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
@@ -111,10 +116,10 @@ int readSOSButton = 0;
 void setup() 
 {
   Serial.begin(9600);
-  pinMode(speak, INPUT);
-  pinMode(vibr, INPUT);
-  pinMode(screenBrowseButton, INPUT);
-  pinMode(triggerSOSButton, INPUT);
+  pinMode(speakTimeButton, INPUT_PULLUP);
+  pinMode(vibrateTimeButton, INPUT_PULLUP);
+  pinMode(screenBrowseButton, INPUT_PULLUP);
+  pinMode(triggerSOSButton, INPUT_PULLUP);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x64)
   display.display();
   display.clearDisplay();
@@ -143,7 +148,21 @@ void loop()
     showSOSScreen();
     Serial.println("interrupt");
   }
-  
+
+  // TODO: Add Speak Code
+  readSpeakTimeButton = digitalRead(speakTimeButton);
+  if (readSpeakTimeButton == LOW)
+  {
+    Serial.println("Speak");
+  }
+
+  // TODO: Add Vibration Code
+  readVibrateTimeButton = digitalRead(vibrateTimeButton);
+  if (readVibrateTimeButton == LOW)
+  {
+    Serial.println("Vibrate");
+  }
+
   // Alarm Event Check
   for (int i=0; i<4; i++)
   {
@@ -166,6 +185,7 @@ void loop()
   // Browse Screen
   if(digitalRead(screenBrowseButton) == LOW)
   {
+    Serial.println("Screen Browse");
     readScreenBrowseButton++;
     if(readScreenBrowseButton%3 == 0)
     {
