@@ -13,6 +13,7 @@
         <TextView
             android:id="@+id/volumeTextView"
             android:text="Volume"
+            android:textSize="24dp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -36,6 +37,7 @@
         <TextView
             android:id="@+id/vibrationTextView"
             android:text="Vibration Frequency"
+            android:textSize="24dp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -51,4 +53,191 @@
             android:layout_marginHorizontal="18dp"
             android:layout_marginTop="18dp"/>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/modeTextView"
+            android:text="Mode of Vibration"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="18dp"
+            android:layout_marginTop="18dp">
+        </TextView>
+        <Spinner
+            android:id="@+id/modeSelectSpinner"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="18dp"
+            android:layout_marginTop="18dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:text="For Hours"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="18dp"
+            android:layout_marginTop="18dp">
+        </TextView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="1 Long Buzz for every "
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="18dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginEnd="18dp">
+                <EditText
+                    android:id="@+id/hourLongBuzzEditText"
+                    android:text="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                </EditText>
+                <TextView
+                    android:text="hours"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="9dp"
+                    android:layout_marginTop="18dp"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="1 Short Buzz for every "
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="18dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginEnd="18dp">
+                <EditText
+                    android:id="@+id/hourShortBuzzEditText"
+                    android:text="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                </EditText>
+                <TextView
+                    android:text="hours"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="9dp"
+                    android:layout_marginTop="18dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:text="For Minutes"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="18dp"
+            android:layout_marginTop="18dp">
+        </TextView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="1 Long Buzz for every "
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="18dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginEnd="18dp">
+                <EditText
+                    android:id="@+id/minuteLongBuzzEditText"
+                    android:text="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                </EditText>
+                <TextView
+                    android:text="minutes"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="9dp"
+                    android:layout_marginTop="18dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="1 Short Buzz for every "
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="18dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginEnd="18dp">
+                <EditText
+                    android:id="@+id/minuteShortBuzzEditText"
+                    android:text="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                </EditText>
+                <TextView
+                    android:text="minutes"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="9dp"
+                    android:layout_marginTop="18dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/modeSaveButton"
+        android:text="SAVE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_gravity="center_horizontal"/>
+
 </LinearLayout>

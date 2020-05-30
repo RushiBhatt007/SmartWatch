@@ -12,7 +12,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="58ed187f-73a9-48c1-abce-f64194711f73" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Arduino/scratch_pad/scratch_pad.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino/scratch_pad/scratch_pad.ino" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Arduino/smartwatch/smartwatch.ino" beforeDir="false" afterPath="$PROJECT_DIR$/../Arduino/smartwatch/smartwatch.ino" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,7 +20,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_2_API_29" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="b661e42c" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -58,7 +57,7 @@
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="device.picker.selection" value="b661e42c" />
-    <property name="last_opened_file_path" value="$USER_HOME$/AndroidStudioProjects/rushi003" />
+    <property name="last_opened_file_path" value="$USER_HOME$/AndroidStudioProjects/Ipl" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RunDashboard">

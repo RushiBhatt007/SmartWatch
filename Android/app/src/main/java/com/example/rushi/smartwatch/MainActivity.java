@@ -47,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
         if(a==-1 && b==-1)
         {
             ConnectImage.setImageAlpha(32);
-            SVButton.setEnabled(false);
-            AlarmButton.setEnabled(false);
-            SOSButton.setEnabled(false);
-            FMWButton.setEnabled(false);
+            //SVButton.setEnabled(false);
+            //AlarmButton.setEnabled(false);
+            //SOSButton.setEnabled(false);
+            //FMWButton.setEnabled(false);
         }
 
         ConnectButton.setOnClickListener(new View.OnClickListener() {
