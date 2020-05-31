@@ -27,6 +27,8 @@ public class SVActivity extends AppCompatActivity {
 
     public int volume, vibration;
     public List<String> modeSpinnerList;
+    public String selectedMode;
+    public String hourLong, hourShort, minuteLong, minuteShort;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +48,26 @@ public class SVActivity extends AppCompatActivity {
         modeSelectSpinner = (Spinner) findViewById(R.id.modeSelectSpinner);
         modeSaveButton = (Button) findViewById(R.id.modeSaveButton);
 
-        modeSaveButton.setEnabled(false);
-        modeSaveButton.setVisibility(View.INVISIBLE);
         volumeSeekBar.setProgress(Integer.parseInt(FirebaseFetchService.getVolume()));
         vibrationSeekBar.setProgress(Integer.parseInt(FirebaseFetchService.getVibration()));
+
+        modeSaveButton.setEnabled(false);
+        modeSaveButton.setVisibility(View.INVISIBLE);
+        setEnableAllEditTexts(false);
+
+        selectedMode = FirebaseFetchService.getSelectedMode();
+        if (selectedMode.equals("2"))
+        {
+            modeSaveButton.setEnabled(true);
+            modeSaveButton.setVisibility(View.VISIBLE);
+            setEnableAllEditTexts(true);
+        }
+        Toast.makeText(getApplicationContext(), "Val is: "+selectedMode, Toast.LENGTH_SHORT).show();
+
+        hourLongBuzzEditText.setText(FirebaseFetchService.getHourLong());
+        hourShortBuzzEditText.setText(FirebaseFetchService.getHourShort());
+        minuteLongBuzzEditText.setText(FirebaseFetchService.getMinuteLong());
+        minuteShortBuzzEditText.setText(FirebaseFetchService.getMinuteShort());
 
         modeSpinnerList = new ArrayList<String>();
         modeSpinnerList.add("Terse");
@@ -59,41 +77,71 @@ public class SVActivity extends AppCompatActivity {
         modeSelectArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         modeSelectSpinner.setAdapter(modeSelectArrayAdapter);
 
+        modeSelectSpinner.setSelection(Integer.parseInt(selectedMode));
+
         modeSelectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "ID: "+position, Toast.LENGTH_SHORT).show();
+                selectedMode = position + "";
                 if (position == 0)
                 {
                     setEnableAllEditTexts(false);
                     modeSaveButton.setEnabled(false);
                     modeSaveButton.setVisibility(View.INVISIBLE);
-                    hourLongBuzzEditText.setText("10");
-                    hourShortBuzzEditText.setText("1");
-                    minuteLongBuzzEditText.setText("10");
-                    minuteShortBuzzEditText.setText("1");
+                    hourLong = "10";
+                    hourShort = "1";
+                    minuteLong = "10";
+                    minuteShort = "1";
+                    setModeVariablesFirebase();
                 }
                 else if (position == 1)
                 {
                     setEnableAllEditTexts(false);
                     modeSaveButton.setEnabled(false);
                     modeSaveButton.setVisibility(View.INVISIBLE);
-                    hourLongBuzzEditText.setText("5");
-                    hourShortBuzzEditText.setText("1");
-                    minuteLongBuzzEditText.setText("15");
-                    minuteShortBuzzEditText.setText("1");
+                    hourLong = "5";
+                    hourShort = "1";
+                    minuteLong = "15";
+                    minuteShort = "1";
+                    setModeVariablesFirebase();
                 }
                 else if (position == 2)
                 {
                     setEnableAllEditTexts(true);
                     modeSaveButton.setEnabled(true);
                     modeSaveButton.setVisibility(View.VISIBLE);
+                    hourLong = FirebaseFetchService.getHourLong();
+                    hourShort = FirebaseFetchService.getHourShort();
+                    minuteLong = FirebaseFetchService.getMinuteLong();
+                    minuteShort = FirebaseFetchService.getMinuteShort();
                 }
+                hourLongBuzzEditText.setText(hourLong);
+                hourShortBuzzEditText.setText(hourShort);
+                minuteLongBuzzEditText.setText(minuteLong);
+                minuteShortBuzzEditText.setText(minuteShort);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+
+        modeSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hourLong = hourLongBuzzEditText.getText().toString();
+                hourShort = hourShortBuzzEditText.getText().toString();
+                minuteLong = minuteLongBuzzEditText.getText().toString();
+                minuteShort = minuteShortBuzzEditText.getText().toString();
+                if (hourLong.equals("") || hourShort.equals("") || minuteLong.equals("") || minuteShort.equals(""))
+                {
+                    Toast.makeText(getApplicationContext(), "Please fill all the values", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    setModeVariablesFirebase();
+                    Toast.makeText(getApplicationContext(), "Custom Values Successfully Saved", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -148,6 +196,16 @@ public class SVActivity extends AppCompatActivity {
         });
 
     }
+
+    private void setModeVariablesFirebase()
+    {
+        FirebaseFetchService.setSelectedMode(selectedMode);
+        FirebaseFetchService.setHourLong(hourLong);
+        FirebaseFetchService.setHourShort(hourShort);
+        FirebaseFetchService.setMinuteLong(minuteLong);
+        FirebaseFetchService.setMinuteShort(minuteShort);
+    }
+
 
     private void setEnableAllEditTexts(boolean bool)
     {

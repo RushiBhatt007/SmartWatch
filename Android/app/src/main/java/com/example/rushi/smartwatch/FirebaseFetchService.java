@@ -28,6 +28,8 @@ public class FirebaseFetchService extends Service {
     public static String GMailUsername, GMailPassword;
     public static String longitude, latitude;
 
+    public static String selectedMode, hourLong, hourShort, minuteLong, minuteShort;
+
     public static int STATUS = -1;  //
     public static DatabaseReference database;
 
@@ -89,10 +91,18 @@ public class FirebaseFetchService extends Service {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     longitude = dataSnapshot.child("longitude").getValue().toString();
                     latitude = dataSnapshot.child("latitude").getValue().toString();
+
                     GMailUsername = dataSnapshot.child("GMailUsername").getValue().toString();
                     GMailPassword = dataSnapshot.child("GMailPassword").getValue().toString();
+
                     volume = dataSnapshot.child("volume").getValue().toString();
                     vibration = dataSnapshot.child("vibration").getValue().toString();
+
+                    selectedMode = dataSnapshot.child("mode").child("selectedMode").getValue().toString();
+                    hourLong = dataSnapshot.child("mode").child("hourLong").getValue().toString();
+                    hourShort = dataSnapshot.child("mode").child("hourShort").getValue().toString();
+                    minuteLong = dataSnapshot.child("mode").child("minuteLong").getValue().toString();
+                    minuteShort = dataSnapshot.child("mode").child("minuteShort").getValue().toString();
                 }
 
                 @Override
@@ -193,6 +203,31 @@ public class FirebaseFetchService extends Service {
         return vibration;
     }
 
+    public static String getSelectedMode()
+    {
+        return selectedMode;
+    }
+
+    public static String getHourLong()
+    {
+        return hourLong;
+    }
+
+    public static String getHourShort()
+    {
+        return hourShort;
+    }
+
+    public static String getMinuteLong()
+    {
+        return minuteLong;
+    }
+
+    public static String getMinuteShort()
+    {
+        return minuteShort;
+    }
+
     public static ArrayList<Alarm> getAlarms()
     {
         return alarms;
@@ -243,6 +278,36 @@ public class FirebaseFetchService extends Service {
     {
         vibration = vibration1;
         database.child("vibration").setValue(vibration);
+    }
+
+    public static void setSelectedMode(String selectedMode1)
+    {
+        selectedMode = selectedMode1;
+        database.child("mode").child("selectedMode").setValue(selectedMode);
+    }
+
+    public static void setHourLong(String hourLong1)
+    {
+        hourLong = hourLong1;
+        database.child("mode").child("hourLong").setValue(hourLong);
+    }
+
+    public static void setHourShort(String hourShort1)
+    {
+        hourShort = hourShort1;
+        database.child("mode").child("hourShort").setValue(hourShort);
+    }
+
+    public static void setMinuteLong(String minuteLong1)
+    {
+        minuteLong = minuteLong1;
+        database.child("mode").child("minuteLong").setValue(minuteLong);
+    }
+
+    public static void setMinuteShort(String minuteShort1)
+    {
+        minuteShort = minuteShort1;
+        database.child("mode").child("minuteShort").setValue(minuteShort);
     }
 
     public static void addAlarms(Alarm alarm, String timestamp)
