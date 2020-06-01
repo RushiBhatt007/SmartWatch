@@ -139,7 +139,8 @@ void mapping(int j)
 }
 
 void talkie_output(int h,int m1,int m2,int ampm)
-{  
+{
+  voice_output.setVol(volume*100/5);
   voice_output.say(spTHE);
   voice_output.say(spTIME);
   voice_output.say(spIS);

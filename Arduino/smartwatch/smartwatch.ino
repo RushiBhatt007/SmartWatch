@@ -191,7 +191,10 @@ void loop()
   readSpeakTimeButton = digitalRead(speakTimeButton);
   if (readSpeakTimeButton == LOW)
   {
-    Serial.println("Speak");
+    int randomVol = random(1, 100);
+    Serial.print("Volume: ");
+    Serial.println(randomVol);
+    voice_output.setVol(randomVol);
     talkie_output(hour, minute/10, minute%10, ampm);
   }
 
@@ -760,7 +763,7 @@ void mapping(int j)
 }
 
 void talkie_output(int h,int m1,int m2,int ampm)
-{  
+{
   voice_output.say(spTHE);
   voice_output.say(spTIME);
   voice_output.say(spIS);
