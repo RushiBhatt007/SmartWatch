@@ -202,7 +202,10 @@ void loop()
   readVibrateTimeButton = digitalRead(vibrateTimeButton);
   if (readVibrateTimeButton == LOW)
   {
+    // TODO: Based on modes, break the hour and minute
+    // TODO: Also, add frequency mapping here
     Serial.println("Vibrate");
+    pwm_vib(hour, minute/10, minute%10, ampm);
   }
 
   // Alarm Event Check
@@ -276,6 +279,7 @@ void fetchVariables()
       keyValue fetch = extractKeyValue();
       String key = fetch.getKey();
       String value = fetch.getValue();
+      // TODO: Add variables asssociated with modes
       if (key == "noa")
       {
         numberOfAlarms = value.toInt();
@@ -780,5 +784,48 @@ void talkie_output(int h,int m1,int m2,int ampm)
   else
     voice_output.say(spP_M_);
   return;
+}
+
+void pwm_vib(int h, int m1, int m2, int ampm)
+{
+  int i=0;
+  for(i=0;i<h;i++)
+  {
+    analogWrite(PWMPin,255);
+    delay(150);
+    analogWrite(PWMPin,0);
+    delay(150);
+  }
+  delay(700);
+  for(i=0;i<m1;i++)
+  {
+    analogWrite(PWMPin,255);
+    delay(150);
+    analogWrite(PWMPin,0);
+    delay(150);
+  }
+  delay(700);
+  for(i=0;i<m2;i++)
+ {
+  analogWrite(PWMPin,255);
+  delay(150);
+  analogWrite(PWMPin,0);
+  delay(150);
+ }
+ delay(700);
+ if (ampm == 0)
+ {
+  analogWrite(PWMPin,255);
+  delay(150);
+  analogWrite(PWMPin,0);
+  delay(150);
+ }
+ else
+ {
+  analogWrite(PWMPin,255);
+  delay(500);
+  analogWrite(PWMPin,0);
+  delay(500);
+ }
 }
 
