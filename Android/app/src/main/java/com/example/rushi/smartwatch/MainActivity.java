@@ -118,8 +118,9 @@ public class MainActivity extends AppCompatActivity {
                 public void run()
                 {
                     BluetoothCommService.updateAlarmTime();
+                    BluetoothCommService.updateModes();
                 }
-            }, 3000);
+            }, 4000);
         }
         return super.onOptionsItemSelected(item);
     }

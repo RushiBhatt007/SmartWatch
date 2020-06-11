@@ -93,6 +93,7 @@ public class SVActivity extends AppCompatActivity {
                     minuteLong = "10";
                     minuteShort = "1";
                     setModeVariablesFirebase();
+                    setModeVariablesBluetooth();
                 }
                 else if (position == 1)
                 {
@@ -104,6 +105,7 @@ public class SVActivity extends AppCompatActivity {
                     minuteLong = "15";
                     minuteShort = "1";
                     setModeVariablesFirebase();
+                    setModeVariablesBluetooth();
                 }
                 else if (position == 2)
                 {
@@ -140,6 +142,7 @@ public class SVActivity extends AppCompatActivity {
                 }
                 else {
                     setModeVariablesFirebase();
+                    setModeVariablesBluetooth();
                     Toast.makeText(getApplicationContext(), "Custom Values Successfully Saved", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -204,6 +207,17 @@ public class SVActivity extends AppCompatActivity {
         FirebaseFetchService.setHourShort(hourShort);
         FirebaseFetchService.setMinuteLong(minuteLong);
         FirebaseFetchService.setMinuteShort(minuteShort);
+    }
+
+    private void setModeVariablesBluetooth()
+    {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                BluetoothCommService.updateModes();
+            }
+        }, 1500);
     }
 
 

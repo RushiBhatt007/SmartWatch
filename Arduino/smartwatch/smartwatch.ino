@@ -128,6 +128,11 @@ String myTime1="";
 String myTime2="";
 String myTime3="";
 int numberOfAlarms=-1;
+String selectedMode="0";  // Default Mode 0
+String hourLong="10";
+String hourShort="1";
+String minuteLong="10";
+String minuteShort="1";
 String volume="";
 String vibration="";
 
@@ -191,10 +196,7 @@ void loop()
   readSpeakTimeButton = digitalRead(speakTimeButton);
   if (readSpeakTimeButton == LOW)
   {
-    int randomVol = random(1, 100);
-    Serial.print("Volume: ");
-    Serial.println(randomVol);
-    voice_output.setVol(randomVol);
+    voice_output.setVol(volume.toInt()*20);
     talkie_output(hour, minute/10, minute%10, ampm);
   }
 
@@ -202,10 +204,30 @@ void loop()
   readVibrateTimeButton = digitalRead(vibrateTimeButton);
   if (readVibrateTimeButton == LOW)
   {
-    // TODO: Based on modes, break the hour and minute
     // TODO: Also, add frequency mapping here
     Serial.println("Vibrate");
-    pwm_vib(hour, minute/10, minute%10, ampm);
+    if(selectedMode == "0")
+    {
+      hourLong="10";
+      hourShort="1";
+      minuteLong="10";
+      minuteShort="1";
+    }
+    else if(selectedMode == "1")
+    {
+      hourLong="5";
+      hourShort="1";
+      minuteLong="15";
+      minuteShort="1";
+    }
+    buzz(hour/(hourLong.toInt()), 250);
+    delay(700);
+    buzz(hour%(hourShort.toInt()), 150);
+    delay(700);
+    buzz(minute/(minuteLong.toInt()), 250);
+    delay(700);
+    buzz(minute%(minuteShort.toInt()), 150);
+    delay(700);
   }
 
   // Alarm Event Check
@@ -366,6 +388,26 @@ void fetchVariables()
       {
         alarmList[3].setMsg(value);
         ackMSG3 = 1;
+      }
+      else if (key == "mod")
+      {
+        selectedMode = value;
+      }
+      else if (key == "hl")
+      {
+        hourLong = value;
+      }
+      else if (key == "hs")
+      {
+        hourShort = value;
+      }
+      else if (key == "ml")
+      {
+        minuteLong = value;
+      }
+      else if (key == "ms")
+      {
+        minuteShort = value;
       }
       else if (key == "vo")
       {
@@ -827,5 +869,16 @@ void pwm_vib(int h, int m1, int m2, int ampm)
   analogWrite(PWMPin,0);
   delay(500);
  }
+}
+
+void buzz(int numberOfBuzz, int buzzDuration)
+{
+  for(int i=0; i<numberOfBuzz; i++)
+  {
+    analogWrite(PWMPin, 255);
+    delay(buzzDuration);
+    analogWrite(PWMPin, 0);
+    delay(buzzDuration);
+  }
 }
 

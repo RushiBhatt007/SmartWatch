@@ -368,6 +368,31 @@ public class BluetoothCommService extends Service {
         }
     }
 
+    public static void updateModes()
+    {
+        String selectedMode = FirebaseFetchService.getSelectedMode();
+        String hourLong = FirebaseFetchService.getHourLong();
+        String hourShort = FirebaseFetchService.getHourShort();
+        String minuteLong = FirebaseFetchService.getMinuteLong();
+        String minuteShort = FirebaseFetchService.getMinuteShort();
+
+        try
+        {
+            initiateSend("~~");
+            sendData("mod", selectedMode);
+            sendData("hl", hourLong);
+            sendData("hs", hourShort);
+            sendData("ml", minuteLong);
+            sendData("ms", minuteShort);
+            terminateSend("==");
+        }
+        catch (IOException e)
+        {
+
+        }
+
+    }
+
     void closeBT()
     {
         try
