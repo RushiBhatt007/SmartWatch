@@ -4,8 +4,10 @@
 #include <Adafruit_SSD1306.h>
 
 #include "Talkie.h"
-Talkie voice_output;
 
+// Including all the libraries 
+
+Talkie voice_output;  // Creating an instance of the class Talkie
 
 const uint8_t spTHE[]       PROGMEM = {0x08,0xE8,0x3E,0x55,0x01,0xC3,0x86,0x27,0xAF,0x72,0x0D,0x4D,0x97,0xD5,0xBC,0x64,0x3C,0xF2,0x5C,0x51,0xF1,0x93,0x36,0x8F,0x4F,0x59,0x2A,0x42,0x7A,0x32,0xC3,0x64,0xFF,0x3F};
 const uint8_t spTIME[]      PROGMEM = {0x0E,0x28,0xAC,0x2D,0x01,0x5D,0xB6,0x0D,0x33,0xF3,0x54,0xB3,0x60,0xBA,0x8C,0x54,0x5C,0xCD,0x2D,0xD4,0x32,0x73,0x0F,0x8E,0x34,0x33,0xCB,0x4A,0x25,0xD4,0x25,0x83,0x2C,0x2B,0xD5,0x50,0x97,0x08,0x32,0xEC,0xD4,0xDC,0x4C,0x33,0xC8,0x70,0x73,0x0F,0x33,0xCD,0x20,0xC3,0xCB,0x43,0xDD,0x3C,0xCD,0x8C,0x20,0x77,0x89,0xF4,0x94,0xB2,0xE2,0xE2,0x35,0x22,0x5D,0xD6,0x4A,0x8A,0x96,0xCC,0x36,0x25,0x2D,0xC9,0x9A,0x7B,0xC2,0x18,0x87,0x24,0x4B,0x1C,0xC9,0x50,0x19,0x92,0x2C,0x71,0x34,0x4B,0x45,0x8A,0x8B,0xC4,0x96,0xB6,0x5A,0x29,0x2A,0x92,0x5A,0xCA,0x53,0x96,0x20,0x05,0x09,0xF5,0x92,0x5D,0xBC,0xE8,0x58,0x4A,0xDD,0xAE,0x73,0xBD,0x65,0x4B,0x8D,0x78,0xCA,0x2B,0x4E,0xD8,0xD9,0xED,0x22,0x20,0x06,0x75,0x00,0x00,0x80,0xFF,0x07};
@@ -39,8 +41,9 @@ const uint8_t spFOURTY[]    PROGMEM = {0x04,0x18,0xB6,0x4C,0x00,0xC3,0x56,0x30,0
 const uint8_t spFIFTY[]     PROGMEM = {0x08,0xE8,0x2E,0x84,0x00,0x23,0x84,0x13,0x60,0x38,0x95,0xA5,0x0F,0xCF,0xE2,0x79,0x8A,0x8F,0x37,0x02,0xB3,0xD5,0x2A,0x6E,0x5E,0x93,0x94,0x79,0x45,0xD9,0x05,0x5D,0x0A,0xB9,0x97,0x63,0x02,0x74,0xA7,0x82,0x80,0xEE,0xC3,0x10,0xD0,0x7D,0x28,0x03,0x6E,0x14,0x06,0x70,0xE6,0x0A,0xC9,0x9A,0x4E,0x37,0xD9,0x95,0x51,0xCE,0xBA,0xA2,0x14,0x0C,0x81,0x36,0x1B,0xB2,0x5C,0x30,0x38,0xFA,0x9C,0xC9,0x32,0x41,0xA7,0x18,0x3B,0xA2,0x48,0x04,0x05,0x51,0x4F,0x91,0x6D,0x12,0x04,0x20,0x9B,0x61,0x89,0xFF,0x1F};
 const uint8_t spPAUSE1[]    PROGMEM = {0x00,0x00,0x00,0x00,0xFF,0x0F};
 
+// Loading all the coefficients corresponding to speech signals of numbers from 1 to 50
 
-
+// keyValue class is created so that the parsed variables can be transferred from one place to another
 class keyValue
 {
   public:
@@ -64,6 +67,8 @@ class keyValue
   void setValue(String value1) {value = value1;}
 };
 
+
+// alarm class allows template of alarm to be created 
 class alarm
 {
   public:
@@ -106,8 +111,9 @@ class alarm
 #define OLED_RESET 4
 #define RTC_Address 0x68
 
-Adafruit_SSD1306 display(OLED_RESET);
+Adafruit_SSD1306 display(OLED_RESET); // Creating an instance of the class Adafruit_SSD1306 for RTC
 
+// RTC variables
 char Time[]     = "  :  :    ";
 char Calendar[] = "  /  /20  ";
 char temperature[] = " 00.00";
@@ -115,6 +121,7 @@ char temperature_msb;
 byte i, second, minute, hour, day, date, month, year, temperature_lsb;
 int ampm;
 
+// Acknowledgement variables
 int ackNOA=0;
 int ackH0=0, ackM0=0, ackS0=0, ackAMPM0=0, ackMSG0=0;
 int ackH1=0, ackM1=0, ackS1=0, ackAMPM1=0, ackMSG1=0;
@@ -122,39 +129,39 @@ int ackH2=0, ackM2=0, ackS2=0, ackAMPM2=0, ackMSG2=0;
 int ackH3=0, ackM3=0, ackS3=0, ackAMPM3=0, ackMSG3=0;
 int ackVOL=0, ackVIB=0;
 
-// Variables
+// Alarm variables
 alarm alarmList[4];
 String myTime1="";
 String myTime2="";
 String myTime3="";
 int numberOfAlarms=-1;
+
+// Mode variables
 String selectedMode="0";  // Default Mode 0
 String hourLong="10";
 String hourShort="1";
 String minuteLong="10";
 String minuteShort="1";
+
+// Sound and Vibration variables
 String volume="";
 String vibration="";
 
-// Buttons
-int PWMPin = 9; // Output of PWM
-
-int speakTimeButton = 7;
-int readSpeakTimeButton = HIGH;
-
-int vibrateTimeButton = 6;
-int readVibrateTimeButton = HIGH;
-
-int screenBrowseButton = 5;
-int readScreenBrowseButton = HIGH;
-
-int currentScreen = 0;
-
-int triggerSOSButton = 4; // ISR does not work with OLED; ISR can be pin 2 or 3
-int readSOSButton = HIGH;
-
+// Button variables
 // Talkie output at Digital 3
 // Display pins at SDA = A4, SCL = A5
+int PWMPin = 9; // Output of PWM (for coin vibrator)
+int speakTimeButton = 7;
+int vibrateTimeButton = 6;
+int screenBrowseButton = 5;
+int triggerSOSButton = 4; 
+
+// Initialize Button's read variables
+int currentScreen = 0;
+int readSpeakTimeButton = HIGH;
+int readVibrateTimeButton = HIGH;
+int readScreenBrowseButton = HIGH;
+int readSOSButton = HIGH;
 
 void setup() 
 {
@@ -192,7 +199,6 @@ void loop()
     Serial.println("interrupt");
   }
 
-  // TODO: Add Speak Code
   readSpeakTimeButton = digitalRead(speakTimeButton);
   if (readSpeakTimeButton == LOW)
   {
@@ -200,7 +206,6 @@ void loop()
     talkie_output(hour, minute/10, minute%10, ampm);
   }
 
-  // TODO: Add Vibration Code
   readVibrateTimeButton = digitalRead(vibrateTimeButton);
   if (readVibrateTimeButton == LOW)
   {
@@ -220,13 +225,18 @@ void loop()
       minuteLong="15";
       minuteShort="1";
     }
-    buzz(hour/(hourLong.toInt()), 250);
+    int hourLongBuzz = hour/(hourLong.toInt());
+    int hourShortBuzz = (hour%(hourLong.toInt()))/(hourShort.toInt());
+    int minuteLongBuzz = minute/(minuteLong.toInt());
+    int minuteShortBuzz = (minute%(minuteLong.toInt()))/(minuteShort.toInt());
+  
+    buzz(hourLongBuzz, 250);
     delay(700);
-    buzz(hour%(hourShort.toInt()), 150);
+    buzz(hourShortBuzz, 150);
     delay(700);
-    buzz(minute/(minuteLong.toInt()), 250);
+    buzz(minuteLongBuzz, 250);
     delay(700);
-    buzz(minute%(minuteShort.toInt()), 150);
+    buzz(minuteShortBuzz, 150);
     delay(700);
   }
 
@@ -627,6 +637,16 @@ void printRoutine()
   Serial.println(volume);
   Serial.print("Vibration: ");
   Serial.println(vibration);
+  Serial.print("selectedMode: ");
+  Serial.println(selectedMode);
+  Serial.print("hourLong: ");
+  Serial.println(hourLong);
+  Serial.print("hourShort: ");
+  Serial.println(hourShort);
+  Serial.print("minuteLong: ");
+  Serial.println(minuteLong);
+  Serial.print("minuteShort: ");
+  Serial.println(minuteShort);
 }
 
 void getRTCTime()
@@ -826,49 +846,6 @@ void talkie_output(int h,int m1,int m2,int ampm)
   else
     voice_output.say(spP_M_);
   return;
-}
-
-void pwm_vib(int h, int m1, int m2, int ampm)
-{
-  int i=0;
-  for(i=0;i<h;i++)
-  {
-    analogWrite(PWMPin,255);
-    delay(150);
-    analogWrite(PWMPin,0);
-    delay(150);
-  }
-  delay(700);
-  for(i=0;i<m1;i++)
-  {
-    analogWrite(PWMPin,255);
-    delay(150);
-    analogWrite(PWMPin,0);
-    delay(150);
-  }
-  delay(700);
-  for(i=0;i<m2;i++)
- {
-  analogWrite(PWMPin,255);
-  delay(150);
-  analogWrite(PWMPin,0);
-  delay(150);
- }
- delay(700);
- if (ampm == 0)
- {
-  analogWrite(PWMPin,255);
-  delay(150);
-  analogWrite(PWMPin,0);
-  delay(150);
- }
- else
- {
-  analogWrite(PWMPin,255);
-  delay(500);
-  analogWrite(PWMPin,0);
-  delay(500);
- }
 }
 
 void buzz(int numberOfBuzz, int buzzDuration)
