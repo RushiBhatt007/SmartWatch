@@ -84,7 +84,7 @@ public class AlarmActivity extends AppCompatActivity {
                         {
                             BluetoothCommService.updateAlarmMessage();
                         }
-                    }, 1000);
+                    }, 3000);
 
                     alarmCustomAdapter.remove(alarmList.get(deletedAlarmPosition));
                     deletedAlarmPosition = -1;

@@ -121,14 +121,6 @@ char temperature_msb;
 byte i, second, minute, hour, day, date, month, year, temperature_lsb;
 int ampm;
 
-// Acknowledgement variables
-int ackNOA=0;
-int ackH0=0, ackM0=0, ackS0=0, ackAMPM0=0, ackMSG0=0;
-int ackH1=0, ackM1=0, ackS1=0, ackAMPM1=0, ackMSG1=0;
-int ackH2=0, ackM2=0, ackS2=0, ackAMPM2=0, ackMSG2=0;
-int ackH3=0, ackM3=0, ackS3=0, ackAMPM3=0, ackMSG3=0;
-int ackVOL=0, ackVIB=0;
-
 // Alarm variables
 alarm alarmList[4];
 String myTime1="";
@@ -141,11 +133,11 @@ String selectedMode="0";  // Default Mode 0
 String hourLong="10";
 String hourShort="1";
 String minuteLong="10";
-String minuteShort="1";
+String minuteShort="2";
 
 // Sound and Vibration variables
-String volume="";
-String vibration="";
+String volume="3";  // Default Volume 3
+String vibration="3"; // Default Vibration 3
 
 // Button variables
 // Talkie output at Digital 3
@@ -229,15 +221,47 @@ void loop()
     int hourShortBuzz = (hour%(hourLong.toInt()))/(hourShort.toInt());
     int minuteLongBuzz = minute/(minuteLong.toInt());
     int minuteShortBuzz = (minute%(minuteLong.toInt()))/(minuteShort.toInt());
-  
-    buzz(hourLongBuzz, 250);
-    delay(700);
-    buzz(hourShortBuzz, 150);
-    delay(700);
-    buzz(minuteLongBuzz, 250);
-    delay(700);
-    buzz(minuteShortBuzz, 150);
-    delay(700);
+
+    int vibrationLong, vibrationShort, vibrationGap;
+    if (vibration == "5")
+    {
+      vibrationLong = 200;
+      vibrationShort = 100;
+      vibrationGap = 300;
+    }
+    else if (vibration == "4")
+    {
+      vibrationLong = 250;
+      vibrationShort = 150;
+      vibrationGap = 350;
+    }
+    else if (vibration == "3")
+    {
+      vibrationLong = 300;
+      vibrationShort = 200;
+      vibrationGap = 400;
+    }
+    else if (vibration == "2")
+    {
+      vibrationLong = 350;
+      vibrationShort = 200;
+      vibrationGap = 500;
+
+    }
+    else if (vibration == "1")
+    {
+      vibrationLong = 400;
+      vibrationShort = 200;
+      vibrationGap = 500;
+    }
+    buzz(hourLongBuzz, vibrationLong);
+    delay(vibrationGap);
+    buzz(hourShortBuzz, vibrationShort);
+    delay(vibrationGap);
+    buzz(minuteLongBuzz, vibrationLong);
+    delay(vibrationGap);
+    buzz(minuteShortBuzz, vibrationShort);
+    delay(vibrationGap);
   }
 
   // Alarm Event Check
@@ -251,7 +275,6 @@ void loop()
         {
           if (ampm == alarmList[i].getAMPM())
           {
-              // TODO: Mechanism to snooze alarm via button
               showAlarmScreen(alarmList[i]);
           }
         }
@@ -264,46 +287,49 @@ void loop()
   {
     Serial.println("Screen Browse");
     readScreenBrowseButton++;
-    if(readScreenBrowseButton%3 == 0)
+    if(readScreenBrowseButton%4 == 0)
     {
       showTimeScreen();
       currentScreen = 0;
     }
-    else if(readScreenBrowseButton%3 == 1)
+    else if(readScreenBrowseButton%4 == 1)
     {
       showSVScreen(volume.toInt(),vibration.toInt());
       currentScreen = 1;
     }
-    else if(readScreenBrowseButton%3 == 2)
+    else if(readScreenBrowseButton%4 == 2)
     {
       showAlarmListScreen();
       currentScreen = 2;
     }
+    else if (readScreenBrowseButton%4 == 3)
+    {
+      showModeScreen();
+      currentScreen = 3;
+    }
   }
   else
   {
-    // Allow Time updation when button not clicked
+    // Allow Screen to hold when button not clicked
     if(currentScreen == 0)
       showTimeScreen();
     else if(currentScreen == 1)
       showSVScreen(volume.toInt(),vibration.toInt());
     else if(currentScreen == 2)
       showAlarmListScreen();
+    else if(currentScreen == 3)
+      showModeScreen();
   }
 }
 
 void fetchVariables()
 {
-  Serial.println("fetch var");
-
   while(true)
   {
     char c = Serial.read();
     if (c == '=')
     {
-      Serial.println("Fetch Done");
-      printRoutine();
-      //sendAcknowledgement();
+      //printRoutine();
       return;
     }
     if (c == '{')
@@ -311,124 +337,63 @@ void fetchVariables()
       keyValue fetch = extractKeyValue();
       String key = fetch.getKey();
       String value = fetch.getValue();
-      // TODO: Add variables asssociated with modes
-      if (key == "noa")
+      Serial.print(key);
+      Serial.print(":");
+      Serial.println(value);
+      if (key == "fmw" && value == "on")
+        showFMWScreen();
+      else if (key == "noa")
       {
         numberOfAlarms = value.toInt();
         for (int j = numberOfAlarms; j<4; j++)
           alarmList[j].setAMPM(-1);
-        ackNOA = 1;
       }
       else if (key == "h0")
-      {
         alarmList[0].setH(value.toInt());
-        ackH0 = 1;
-      }
       else if (key == "m0")
-      {
         alarmList[0].setM(value.toInt());
-        ackM0 = 1;
-      }
       else if (key == "ap0")
-      {
         alarmList[0].setAMPM(value.toInt());
-        ackAMPM0 = 1;
-      }
       else if (key == "ms0")
-      {
         alarmList[0].setMsg(value);
-        ackMSG0 = 1;
-      }
       else if (key == "h1")
-      {
         alarmList[1].setH(value.toInt());
-        ackH1 = 1;
-      }
       else if (key == "m1")
-      {
         alarmList[1].setM(value.toInt());
-        ackM1 = 1;
-      }
       else if (key == "ap1")
-      {
         alarmList[1].setAMPM(value.toInt());
-        ackAMPM1 = 1;
-      }
       else if (key == "ms1")
-      {
         alarmList[1].setMsg(value);
-        ackMSG1 = 1;
-      }
       else if (key == "h2")
-      {
         alarmList[2].setH(value.toInt());
-        ackH2 = 1;
-      }
       else if (key == "m2")
-      {
         alarmList[2].setM(value.toInt());
-        ackM2 = 1;
-      }
       else if (key == "ap2")
-      {
         alarmList[2].setAMPM(value.toInt());
-        ackAMPM2 = 1;
-      }
       else if (key == "ms2")
-      {
         alarmList[2].setMsg(value);
-        ackMSG2 = 1;
-      }
       else if (key == "h3")
-      {
         alarmList[3].setH(value.toInt());
-        ackH3 = 1;
-      }
       else if (key == "m3")
-      {
         alarmList[3].setM(value.toInt());
-        ackM3 = 1;
-      }
       else if (key == "ap3")
-      {
         alarmList[3].setAMPM(value.toInt());
-        ackAMPM3 = 1;
-      }
       else if (key == "ms3")
-      {
         alarmList[3].setMsg(value);
-        ackMSG3 = 1;
-      }
       else if (key == "mod")
-      {
         selectedMode = value;
-      }
       else if (key == "hl")
-      {
         hourLong = value;
-      }
       else if (key == "hs")
-      {
         hourShort = value;
-      }
       else if (key == "ml")
-      {
         minuteLong = value;
-      }
       else if (key == "ms")
-      {
         minuteShort = value;
-      }
       else if (key == "vo")
-      {
         volume = value;
-        ackVOL = 1;
-      }
       else if (key == "vi")
-      {
         vibration = value;
-        ackVIB = 1;
-      }
     }
   }
 }
@@ -456,6 +421,11 @@ void showSOSScreen()
     display.setTextSize(3);
     display.setCursor(56,12);
     display.println(i);
+    if (digitalRead(screenBrowseButton) == LOW)
+    {
+      currentScreen = 0;
+      return;
+    }
     delay(1000);
     display.display();
   }
@@ -464,34 +434,51 @@ void showSOSScreen()
 
 void showFMWScreen()
 {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(26,10);
-  display.println("Finding your");
-  display.setCursor(26,18);
-  display.print("watch .....");
-  display.display();
+  while (digitalRead(screenBrowseButton) != LOW)
+  {
+    delay(200);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(26,10);
+    display.println("Finding your");
+    display.setCursor(26,18);
+    display.print("watch .....");
+    display.display();
+    // TODO: Add speaker code
+    buzz(2, 200);
+    delay(200);
+    display.clearDisplay();
+    display.display();
+  }
 }
 
 void showAlarmScreen(alarm alarm1)
 {
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.setCursor(12,4);
-  display.print(alarm1.getH());
-  display.print(":");
-  display.print(alarm1.getM());
-  if (alarm1.getAMPM() == 0)
-    display.println("AM");
-  else
-    display.println("PM");
-  display.setTextSize(1);
-  display.setCursor(10,22);
-  display.println(alarm1.getMsg());
-  display.display();
-  delay(5000);
+  while (digitalRead(screenBrowseButton) != LOW)
+  {
+    delay(200);
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(12,4);
+    display.print(alarm1.getH());
+    display.print(":");
+    display.print(alarm1.getM());
+    if (alarm1.getAMPM() == 0)
+      display.println("AM");
+    else
+      display.println("PM");
+    display.setTextSize(1);
+    display.setCursor(10,22);
+    display.println(alarm1.getMsg());
+    display.display();
+    // TODO: Add speaker code
+    buzz(2, 200);
+    delay(200);
+    display.clearDisplay();
+    display.display();
+  }  
 }
 
 void showAlarmListScreen()
@@ -552,38 +539,33 @@ void showSVScreen(int volume, int vibration)
   display.display();
 }
 
-void sendAcknowledgement()
-{  
-  if (ackNOA == 0 || ackH0 == 0 || ackM0 == 0 || ackS0 == 0 || ackAMPM0 == 0)
-  {
-    Serial.println("ackAlarmTime0");
-  }
-  else if (ackH1 == 0 || ackM1 == 0 || ackS1 == 0 || ackAMPM1 == 0)
-  {
-    Serial.println("ackAlarmTime1");
-  }
-  else if (ackH2 == 0 || ackM2 == 0 || ackS2 == 0 || ackAMPM2 == 0)
-  {
-    Serial.println("ackAlarmTime2");    
-  }
-  else if (ackH3 == 0 || ackM3 == 0 || ackS3 == 0 || ackAMPM3 == 0)
-  {
-    Serial.println("ackAlarmTime3");    
-  }
-  else if (ackMSG0 == 0 || ackMSG1 == 0 || ackMSG2 == 0 || ackMSG3 == 0)
-  {
-    Serial.println("ackAlarmMsg");
-  }
-  else if (ackVOL == 0 || ackVIB == 0)
-  {
-    Serial.println("ackSV");
-  }
+void showModeScreen()
+{
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print("Mode: ");
+  if (selectedMode == "0")
+    display.println("Terse");
+  else if (selectedMode == "1")
+    display.println("Digit");
+  else if (selectedMode == "2")
+    display.println("Custom");
+  display.println("");
+  display.print("Hour (L, S): ");
+  display.print(hourLong);
+  display.print(", ");
+  display.println(hourShort);
+  display.print("Minute (L, S): ");
+  display.print(minuteLong);
+  display.print(", ");
+  display.println(minuteShort);  
+  display.display();
 }
 
 keyValue extractKeyValue()
 {
-  Serial.println("KV");
-
   String key="", value="";
   while(true)
   {
@@ -619,7 +601,7 @@ void printRoutine()
 {
   Serial.println();
   Serial.print("Time: ");
-  Serial.print(Time);
+  Serial.println(Time);
   Serial.print("Number of Alarms: ");
   Serial.println(numberOfAlarms);
   for (int i=0; i<4; i++)
@@ -628,9 +610,9 @@ void printRoutine()
     Serial.print(":");
     Serial.print(alarmList[i].getM());
     if (alarmList[i].getAMPM() == 0)
-        Serial.println("AM");
+        Serial.print("AM, ");
       else
-        Serial.println("PM");  
+        Serial.print("PM, ");  
     Serial.println(alarmList[i].getMsg());
   }
   Serial.print("Volume: ");

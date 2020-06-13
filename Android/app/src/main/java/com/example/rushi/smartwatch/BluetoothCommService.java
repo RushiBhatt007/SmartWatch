@@ -212,36 +212,6 @@ public class BluetoothCommService extends Service {
                                         {
                                             MainActivity.sendEmailAndSMS();
                                         }
-                                        else if (data.contains("ackAlarmTime"))
-                                        {
-                                            Handler handler1 = new Handler();
-                                            handler1.postDelayed(new Runnable() {
-                                                public void run()
-                                                {
-                                                    BluetoothCommService.updateAlarmTime();
-                                                }
-                                            }, 1000);
-                                        }
-                                        else if (data.contains("ackAlarmMsg"))
-                                        {
-                                            Handler handler1 = new Handler();
-                                            handler1.postDelayed(new Runnable() {
-                                                public void run()
-                                                {
-                                                    BluetoothCommService.updateAlarmMessage();
-                                                }
-                                            }, 1000);
-                                        }
-                                        else if (data.contains("ackSV"))
-                                        {
-                                            Handler handler1 = new Handler();
-                                            handler1.postDelayed(new Runnable() {
-                                                public void run()
-                                                {
-                                                    BluetoothCommService.updateSV();
-                                                }
-                                            }, 1000);
-                                        }
 
                                     }
                                 });
@@ -272,9 +242,9 @@ public class BluetoothCommService extends Service {
         listenThread.start();
     }
 
-    public static void initiateSend(String s) throws IOException
+    public static void initiateSend() throws IOException
     {
-        String data = s + '\n';
+        String data = "~~\n";
         outputStream.write(data.getBytes());
     }
 
@@ -284,9 +254,9 @@ public class BluetoothCommService extends Service {
         outputStream.write(data.getBytes());
     }
 
-    public static void terminateSend(String s) throws IOException
+    public static void terminateSend() throws IOException
     {
-        String data = s + '\n';
+        String data = "==\n";
         outputStream.write(data.getBytes());
     }
 
@@ -307,7 +277,7 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~~");
+            initiateSend();
             sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
@@ -315,7 +285,7 @@ public class BluetoothCommService extends Service {
                 sendData("m"+i, alarmMinSend[i]);
                 sendData("ap"+i, alarmAMPMSend[i]+"");
             }
-            terminateSend("==");
+            terminateSend();
         }
         catch (IOException e)
         {
@@ -336,13 +306,13 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~~");
+            initiateSend();
             sendData("noa", numberOfAlarms+"");
             for(int i=0; i<numberOfAlarms; i++)
             {
                 sendData("ms"+i, alarmSendArray[i]);
             }
-            terminateSend("==");
+            terminateSend();
         }
         catch (IOException e)
         {
@@ -357,10 +327,10 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~~");
+            initiateSend();
             sendData("vo", volume);
             sendData("vi", vibration);
-            terminateSend("==");
+            terminateSend();
         }
         catch (IOException e)
         {
@@ -378,19 +348,32 @@ public class BluetoothCommService extends Service {
 
         try
         {
-            initiateSend("~~");
+            initiateSend();
             sendData("mod", selectedMode);
             sendData("hl", hourLong);
             sendData("hs", hourShort);
             sendData("ml", minuteLong);
             sendData("ms", minuteShort);
-            terminateSend("==");
+            terminateSend();
         }
         catch (IOException e)
         {
 
         }
+    }
 
+    public static void sendFMWTrigger()
+    {
+        try
+        {
+            initiateSend();
+            sendData("fmw", "on");
+            terminateSend();
+        }
+        catch (IOException e)
+        {
+
+        }
     }
 
     void closeBT()

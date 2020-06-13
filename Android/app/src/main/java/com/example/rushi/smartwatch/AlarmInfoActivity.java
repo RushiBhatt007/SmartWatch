@@ -84,7 +84,7 @@ public class AlarmInfoActivity extends AppCompatActivity {
                         {
                             BluetoothCommService.updateAlarmMessage();
                         }
-                    }, 1000);
+                    }, 3000);
 
                     Intent nextActivity = new Intent(AlarmInfoActivity.this, AlarmActivity.class);
                     startActivity(nextActivity);

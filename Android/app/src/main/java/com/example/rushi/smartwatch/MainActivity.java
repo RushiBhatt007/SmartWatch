@@ -47,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
         if(a==-1 && b==-1)
         {
             ConnectImage.setImageAlpha(32);
-            //SVButton.setEnabled(false);
-            //AlarmButton.setEnabled(false);
-            //SOSButton.setEnabled(false);
-            //FMWButton.setEnabled(false);
+            SVButton.setEnabled(false);
+            AlarmButton.setEnabled(false);
+            SOSButton.setEnabled(false);
+            FMWButton.setEnabled(false);
         }
 
         ConnectButton.setOnClickListener(new View.OnClickListener() {
@@ -108,19 +108,19 @@ public class MainActivity extends AppCompatActivity {
             handler1.postDelayed(new Runnable() {
                 public void run()
                 {
-                    BluetoothCommService.updateAlarmMessage();
+                    BluetoothCommService.updateAlarmTime();
                     BluetoothCommService.updateSV();
+                    BluetoothCommService.updateModes();
                 }
-            }, 1000);
+            }, 2000);
 
             Handler handler2 = new Handler();
             handler2.postDelayed(new Runnable() {
                 public void run()
                 {
-                    BluetoothCommService.updateAlarmTime();
-                    BluetoothCommService.updateModes();
+                    BluetoothCommService.updateAlarmMessage();
                 }
-            }, 4000);
+            }, 7000);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -177,8 +177,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         final String bodySMS =  "SOS! I need emergency help (Sent from SmartWatch).\nMy location is: "+locationURL;
-
-        //Not send sms right now
 
         SmsManager smsManager = SmsManager.getDefault();
 

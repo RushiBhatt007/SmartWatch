@@ -62,7 +62,6 @@ public class SVActivity extends AppCompatActivity {
             modeSaveButton.setVisibility(View.VISIBLE);
             setEnableAllEditTexts(true);
         }
-        Toast.makeText(getApplicationContext(), "Val is: "+selectedMode, Toast.LENGTH_SHORT).show();
 
         hourLongBuzzEditText.setText(FirebaseFetchService.getHourLong());
         hourShortBuzzEditText.setText(FirebaseFetchService.getHourShort());
