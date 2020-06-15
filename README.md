@@ -2,8 +2,8 @@
 
 <Insert project description>
  
- ## Circuit Diagram
- <Insert images>
+ ## Hardware Implementation
+![alt text](https://github.com/RushiBhatt007/SmartWatch/blob/master/labelled%20circuit%20diagram.jpg?raw=true)
  
  ## Built With
  ### Software Platforms
