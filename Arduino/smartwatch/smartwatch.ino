@@ -187,8 +187,8 @@ void loop()
   readSOSButton = digitalRead(triggerSOSButton);
   if (readSOSButton == LOW)
   {
-    showSOSScreen();
-    Serial.println("interrupt");
+    if (showSOSScreen() == true)
+          Serial.println("interrupt");    
   }
 
   readSpeakTimeButton = digitalRead(speakTimeButton);
@@ -408,7 +408,7 @@ void showTimeScreen()
   display.display();
 }
 
-void showSOSScreen()
+boolean showSOSScreen()
 {
   for(int i=5;i>=0;i--)
   {
@@ -423,12 +423,13 @@ void showSOSScreen()
     if (digitalRead(screenBrowseButton) == LOW)
     {
       currentScreen = 0;
-      return;
+      return false;
     }
     delay(1000);
     display.display();
   }
   delay(5000);
+  return true;
 }
 
 void showFMWScreen()
