@@ -329,7 +329,6 @@ void fetchVariables()
     char c = Serial.read();
     if (c == '=')
     {
-      //printRoutine();
       return;
     }
     if (c == '{')

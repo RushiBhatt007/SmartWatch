@@ -322,8 +322,8 @@ public class BluetoothCommService extends Service {
 
     public static void updateSV()
     {
-        String volume = FirebaseFetchService.getVolume();   //D
-        String vibration = FirebaseFetchService.getVibration(); //E
+        String volume = FirebaseFetchService.getVolume();
+        String vibration = FirebaseFetchService.getVibration();
 
         try
         {
